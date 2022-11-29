@@ -1,56 +1,51 @@
 ; Variables (v) and Flags (f)
 
-ObSize = $40 ; size for each object variables
+v_128x128:	equ $FFFF0000   ; 128x128 tile mappings ($8000 bytes)
+v_lvllayout:    equ $FFFF8000   ; level layout ($1000 bytes)
+v_16x16:        equ $FFFF9000   ; 16x16 tile mappings ($1800 bytes)
+v_bgscroll_buffer:	equ $FFFFA800	; background scroll buffer ($200 bytes)
+v_ngfx_buffer:	equ $FFFFAA00    ; Nemesis graphics decompression buffer ($200 bytes)
+v_spritequeue:	equ $FFFFAC00    ; sprite display queue, in order of priority ($400 bytes)
+v_objspace:	equ $FFFFB000    ; object variable space ($40 bytes per object) ($2000 bytes)
+v_col1st:       equ $FFFFD000
+v_col2nd:       equ $FFFFD600
+v_vdp_cmdbuf:   equ $FFFFDC00
+v_vdp_cmdbufend:equ $FFFFDCFC
+v_spritetablebuffer:    equ $FFFFDD00   ; sprite table ($280 bytes)
+v_hscrolltablebuffer:   equ $FFFFE000
+v_tracksonic:   equ $FFFFE400
+v_tracktails:   equ $FFFFE500
+v_recordsonic:  equ $FFFFE600
+v_recordtails:  equ $FFFFE700
+v_rpl_data:     equ $FFFFE800
+v_screenposx:   equ $FFFFEE00
+v_screenposy:   equ $FFFFEE04
+v_bgscreenposx: equ $FFFFEE08
+v_bgscreenposy: equ $FFFFEE0C
+v_bg2screenposx:equ $FFFFEE10
+v_bg2screenposy:equ $FFFFEE14
+v_bg3screenposx:equ $FFFFEE18
+v_bg3screenposy:equ $FFFFEE1C
+v_screenposx_2p:equ $FFFFEE20
+v_screenposy_2p:equ $FFFFEE24
+v_bgscreenposx_2p:      equ $FFFFEE28
+v_bgscreenposy_2p:      equ $FFFFEE2C
+v_bg2screenposx_2p:     equ $FFFFEE30
+v_bg2screenposy_2p:     equ $FFFFEE34
+v_bg3screenposx_2p:     equ $FFFFEE38
+v_bg3screenposy_2p:     equ $FFFFEE3C
+v_fg_horiz_rd_flags:    equ $FFFFEE40
+v_fg_verti_rd_flags:    equ $FFFFEE41
+v_bg1_xblock:   equ $FFFFEE42
+v_bg2_xblock:   equ $FFFFEE43
+v_bg3_xblock:   equ $FFFFEE44
+v_bg4_xblock:   equ $FFFFEE46
 
-                rsset $FFFF0000
-v_128x128:	rs.b  $8000   ; 128x128 tile mappings ($8000 bytes) $FFFF0000
-v_lvllayout:    rs.b  $1000   ; level layout ($1000 bytes) $FFFF8000
-v_16x16:        rs.b  $1800   ; 16x16 tile mappings ($1800 bytes) $FFFF9000
-v_bgscroll_buffer:	rs.b  $200	; background scroll buffer ($200 bytes) $FFFFA800
-v_ngfx_buffer:	rs.b  $200    ; Nemesis graphics decompression buffer ($200 bytes) $FFFFAA00
-v_spritequeue:	rs.b  $400    ; sprite display queue, in order of priority ($400 bytes) $FFFFAC00
-v_objspace:	rs.b  ObSize*$7F      ; object variable space ($40 bytes per object) ($2000 bytes) $FFFFB000
-                rs.b  $40
-v_col1st:       rs.b  $600            ; $FFFFD000
-v_col2nd:       rs.b  $600            ; $FFFFD600
-v_vdp_cmdbuf:   rs.b  $FC             ; $FFFFDC00
-v_vdp_cmdbufend:rs.l  1               ; $FFFFDCFC
-v_spritetablebuffer:    rs.b $280       ; sprite table ($280 bytes) $FFFFDD00
-                rs.b  $80        ; unused, was overwritten in s1
-v_hscrolltablebuffer:   rs.b $400       ; $FFFFE000
-v_tracksonic:   rs.b  $100   ; $FFFFE400
-v_tracktails:   rs.b  $100   ; $FFFFE500
-v_recordsonic:  rs.b  $100   ; $FFFFE600
-v_recordtails:  rs.b  $100   ; $FFFFE700
-v_rpl_data:     rs.b  $600   ; $FFFFE800
-v_screenposx:   rs.l  1      ; $FFFFEE00
-v_screenposy:   rs.l  1      ; $FFFFEE04
-v_bgscreenposx: rs.l  1      ; $FFFFEE08
-v_bgscreenposy: rs.l  1      ; $FFFFEE0C
-v_bg2screenposx:rs.l  1      ; $FFFFEE10
-v_bg2screenposy:rs.l  1      ; $FFFFEE14
-v_bg3screenposx:rs.l  1      ; $FFFFEE18
-v_bg3screenposy:rs.l  1      ; $FFFFEE1C
-v_screenposx_2p:rs.l  1      ; $FFFFEE20
-v_screenposy_2p:rs.l  1      ; $FFFFEE24
-v_bgscreenposx_2p:      rs.l 1    ; $FFFFEE28
-v_bgscreenposy_2p:      rs.l 1    ; $FFFFEE2C
-v_bg2screenposx_2p:     rs.l 1    ; $FFFFEE30
-v_bg2screenposy_2p:     rs.l 1    ; $FFFFEE34
-v_bg3screenposx_2p:     rs.l 1    ; $FFFFEE38
-v_bg3screenposy_2p:     rs.l 1    ; $FFFFEE3C
-v_fg_horiz_rd_flags:    rs.b 1    ; $FFFFEE40
-v_fg_verti_rd_flags:    rs.b 1    ; $FFFFEE41
-v_bg1_xblock:   rs.b  1      ; $FFFFEE42
-v_bg2_xblock:   rs.b  1      ; $FFFFEE43
-v_bg3_xblock:   rs.w  1      ; $FFFFEE44
-v_bg4_xblock:   rs.b  1      ; $FFFFEE46
-
-v_snddriver_ram:	equ $FFFFF000 ; start of RAM for the sound driver data ($5C0 bytes)
+v_snddriver_ram:	equ $FFFFF000   ; start of RAM for the sound driver data ($5C0 bytes)
 v_systemstack:	equ $FFFFFE00
-v_zone:		equ $FFFFFE10	; current zone number
-v_act:		equ $FFFFFE11	; current act number
-f_2player:      equ $FFFFFFE8   ; flag for 2 player mode.
+v_zone:		equ $FFFFFE10	 ; current zone number
+v_act:		equ $FFFFFE11	 ; current act number
+f_2player:      equ $FFFFFFE8    ; flag for 2 player mode.
 
 v_startofvariables:	equ $000
 v_sndprio:		equ $000	; sound priority (priority of new music/SFX must be higher or equal to this value or it won't play; bit 7 of priority being set prevents this value from changing)
