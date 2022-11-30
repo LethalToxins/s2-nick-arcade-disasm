@@ -42,6 +42,45 @@ v_bg3_xblock:   equ $FFFFEE44
 v_bg4_xblock:   equ $FFFFEE46
 
 v_snddriver_ram:	equ $FFFFF000   ; start of RAM for the sound driver data ($5C0 bytes)
+v_gamemode:	equ $FFFFF600	; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; +8C=PreLevel)
+v_jpadhold2:	equ $FFFFF602	; joypad input - held, duplicate
+v_jpadpress2:	equ $FFFFF603	; joypad input - pressed, duplicate
+v_jpadhold1:	equ $FFFFF604	; joypad input - held
+v_jpadpress1:	equ $FFFFF605	; joypad input - pressed
+
+v_vdp_buffer1:	equ $FFFFF60C	; VDP instruction buffer (2 bytes)
+v_demolength:	equ $FFFFF614	; the length of a demo in frames (2 bytes)
+v_scrposy_dup:	equ $FFFFF616	; screen position y (duplicate) (2 bytes)
+v_bgscrposy_dup:	equ $FFFFF618	; background screen position y (duplicate) (2 bytes)
+v_scrposx_dup:	equ $FFFFF61A	; screen position x (duplicate) (2 bytes)
+v_bgscreenposx_dup_unused:	equ $FFFFF61C	; background screen position x (duplicate) (2 bytes)
+v_bg3screenposy_dup_unused:	equ $FFFFF61E	; (2 bytes)
+v_bg3screenposx_dup_unused:	equ $FFFFF620	; (2 bytes)
+
+v_hbla_hreg:	equ $FFFFF624	; VDP H.interrupt register buffer (8Axx) (2 bytes)
+v_hbla_line:	equ $FFFFF625	; screen line where water starts and palette is changed by HBlank
+v_pfade_start:	equ $FFFFF626	; palette fading - start position in bytes
+v_pfade_size:	equ $FFFFF627	; palette fading - number of colours
+v_vbla_routine:	equ $FFFFF62A	; VBlank - routine counter
+v_spritecount:	equ $FFFFF62C	; number of sprites on-screen
+v_pcyc_num:	equ $FFFFF632	; palette cycling - current reference number (2 bytes)
+v_pcyc_time:	equ $FFFFF634	; palette cycling - time until the next change (2 bytes)
+v_random:	equ $FFFFF636	; pseudo random number buffer (4 bytes)
+f_pause:		equ $FFFFF63A	; flag set to pause the game (2 bytes)
+v_vdp_buffer2:	equ $FFFFF640	; VDP instruction buffer (2 bytes)
+f_hbla_pal:	equ $FFFFF644	; flag set to change palette during HBlank (0000 = no; 0001 = change) (2 bytes)
+v_waterpos1:	equ $FFFFF646	; water height, actual (2 bytes)
+v_waterpos2:	equ $FFFFF648	; water height, ignoring sway (2 bytes)
+v_waterpos3:	equ $FFFFF64A	; water height, next target (2 bytes)
+f_water:		equ $FFFFF64C	; flag set for water
+v_wtr_routine:	equ $FFFFF64D	; water event - routine counter
+f_wtr_state:	equ $FFFFF64E	; water palette state when water is above/below the screen (00 = partly/all dry; 01 = all underwater)
+
+v_pal_buffer:	equ $FFFFF650	; palette data buffer (used for palette cycling) ($30 bytes)
+v_plc_buffer:	equ $FFFFF680	; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
+v_ptrnemcode:	equ $FFFFF6E0	; pointer for nemesis decompression code ($1502 or $150C) (4 bytes)
+
+f_plc_execute:	equ $FFFFF6F8	; flag set for pattern load cue execution (2 bytes)
 v_systemstack:	equ $FFFFFE00
 v_zone:		equ $FFFFFE10	 ; current zone number
 v_act:		equ $FFFFFE11	 ; current act number

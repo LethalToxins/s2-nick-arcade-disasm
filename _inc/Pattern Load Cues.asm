@@ -65,12 +65,12 @@ PLC_CPZ:	dc.w 2			; DATA XREF: ROM:ArtLoadCueso
 		dc.w 0
 		dc.l Nem_CPZ_Unknown
 		dc.w $7A00
-		dc.l Nem_CPZ_FloatingPlatform
+		dc.l Nem_CPZ_Platform
 		dc.w $8000
 PLC_CPZ2:	dc.w 3			; DATA XREF: ROM:ArtLoadCueso
 		dc.l Nem_VSpikes
 		dc.w $8680
-		dc.l Nem_DSpikes
+		dc.l Nem_DSpring
 		dc.w $8780
 		dc.l Nem_VSpring2
 		dc.w $8B80
@@ -89,7 +89,7 @@ PLC_EHZ:	dc.w 8			; DATA XREF: ROM:ArtLoadCueso
 		dc.w $79C0
 		dc.l Nem_VSpikes
 		dc.w $8680
-		dc.l Nem_DSpikes
+		dc.l Nem_DSpring
 		dc.w $8780
 		dc.l Nem_VSpring2
 		dc.w $8B80
@@ -100,11 +100,11 @@ PLC_EHZ2:	dc.w 4			; DATA XREF: ROM:ArtLoadCueso
 		dc.w $AC00
 		dc.l Nem_Points
 		dc.w $9580
-		dc.l Nem_Buzzbomber
+		dc.l Nem_Buzzer
 		dc.w $7CC0
 		dc.l Nem_Snail
 		dc.w $8040
-		dc.l Nem_EHZ_Piranha
+		dc.l Nem_Masher
 		dc.w $8380
 PLC_HPZ:	dc.w 7			; DATA XREF: ROM:ArtLoadCueso
 		dc.l Nem_HPZ
@@ -121,24 +121,24 @@ PLC_HPZ:	dc.w 7			; DATA XREF: ROM:ArtLoadCueso
 		dc.w $6F80
 		dc.l Nem_HPZ_Emerald
 		dc.w $7240
-		dc.l Nem_HPZ_WaterSurface
+		dc.l Nem_WaterSurface
 		dc.w $8000
 PLC_HPZ2:	dc.w 1			; DATA XREF: ROM:ArtLoadCueso
-		dc.l Nem_Dinobot
+		dc.l Nem_Redz
 		dc.w $A000
-		dc.l Nem_Bat
+		dc.l Nem_BBat
 word_1C1E4:	dc.w $A600		; DATA XREF: ROM:0000C3FAo
-		dc.l Nem_Crocobot
+		dc.l Nem_Gator
 		dc.w $6000
-		dc.l Nem_Buzzbomber
+		dc.l Nem_Buzzer
 		dc.w $6580
-		dc.l Nem_Bat
+		dc.l Nem_BBat
 		dc.w $6A00
 		dc.l Nem_Triceratops
 		dc.w $7880
-		dc.l Nem_Dinobot
+		dc.l Nem_Redz
 		dc.w $A000
-		dc.l Nem_HPZ_Piranha
+		dc.l Nem_BFish
 		dc.w $A600
 PLC_HTZ:	dc.w 9			; DATA XREF: ROM:ArtLoadCueso
 		dc.l Nem_EHZ
@@ -159,7 +159,7 @@ PLC_HTZ:	dc.w 9			; DATA XREF: ROM:ArtLoadCueso
 		dc.w $79C0
 		dc.l Nem_VSpikes
 		dc.w $8680
-		dc.l Nem_DSpikes
+		dc.l Nem_DSpring
 		dc.w $8780
 		dc.l Nem_VSpring2
 		dc.w $8B80
@@ -168,11 +168,11 @@ PLC_HTZ:	dc.w 9			; DATA XREF: ROM:ArtLoadCueso
 PLC_HTZ2:	dc.w 0			; DATA XREF: ROM:ArtLoadCueso
 		dc.l Nem_HTZ_Lift
 		dc.w $7CC0
-		dc.l Nem_Buzzbomber
+		dc.l Nem_Buzzer
 		dc.w $7CC0
 		dc.l Nem_Snail
 		dc.w $8040
-		dc.l Nem_EHZ_Piranha
+		dc.l Nem_Masher
 		dc.w $8380
 PLC_S1TitleCard:dc.w 0			; DATA XREF: ROM:ArtLoadCueso
 		dc.l Nem_S1TitleCard

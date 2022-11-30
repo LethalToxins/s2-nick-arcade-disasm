@@ -241,7 +241,7 @@ ChksumChkLoop:				; CODE XREF: ROM:00000336j
 		cmp.w	(a1),d1
 		nop
 		nop
-		lea	($FFFFFE00).w,a6
+		lea	(v_systemstack).w,a6
 		moveq	#0,d7
 		move.w	#$7F,d6
 
@@ -264,10 +264,10 @@ ClearRemainingRAMLoop:			; CODE XREF: ROM:00000378j
 		bsr.w	VDPRegSetup
 		bsr.w	SoundDriverLoad
 		bsr.w	JoypadInit
-		move.b	#0,($FFFFF600).w
+		move.b	#0,(v_gamemode).w
 
 MainGameLoop:				; CODE XREF: ROM:0000039Aj
-		move.b	($FFFFF600).w,d0
+		move.b	(v_gamemode).w,d0
 		andi.w	#$1C,d0
 		jsr	GameModeArray(pc,d0.w)
 		bra.s	MainGameLoop
@@ -472,7 +472,7 @@ ShowErrDigit_NoOverflow:		; CODE XREF: ShowErrDigit+Aj
 Error_WaitForC:				; CODE XREF: ROM:ErrorMsg_Waitp
 					; Error_WaitForC+Aj
 		bsr.w	ReadJoypads
-		cmpi.b	#$20,($FFFFF605).w 
+		cmpi.b	#$20,(v_jpadpress1).w 
 		bne.w	Error_WaitForC
 		rts
 ; End of function Error_WaitForC
@@ -492,7 +492,7 @@ loc_B12:				; CODE XREF: ROM:00000B1Cj
 		andi.w	#8,d0
 		beq.s	loc_B12
 		move.l	#$40000010,(vdp_control_port).l
-		move.l	($FFFFF616).w,(vdp_data_port).l
+		move.l	(v_scrposy_dup).w,(vdp_data_port).l
 		btst	#6,($FFFFFFF8).w
 		beq.s	loc_B40
 		move.w	#$700,d0
@@ -528,11 +528,11 @@ off_B6C:	dc.w loc_B86-off_B6C,loc_CAA-off_B6C; 0	; DATA XREF: ROM:off_B6Co
 
 loc_B86:				; CODE XREF: ROM:00000B10j
 					; DATA XREF: ROM:off_B6Co
-		cmpi.b	#$8C,($FFFFF600).w
+		cmpi.b	#$8C,(v_gamemode).w
 		beq.s	loc_BA0
-		cmpi.b	#8,($FFFFF600).w
+		cmpi.b	#8,(v_gamemode).w
 		beq.s	loc_BA0
-		cmpi.b	#$C,($FFFFF600).w
+		cmpi.b	#$C,(v_gamemode).w
 		bne.w	loc_B5C
 
 loc_BA0:				; CODE XREF: ROM:00000B8Cj
@@ -582,7 +582,7 @@ loc_C26:				; CODE XREF: ROM:00000C00j
 loc_C3E:				; CODE XREF: ROM:00000BA4j
 		move.w	(vdp_control_port).l,d0
 		move.l	#$40000010,(vdp_control_port).l
-		move.l	($FFFFF616).w,(vdp_data_port).l
+		move.l	(v_scrposy_dup).w,(vdp_data_port).l
 		btst	#6,($FFFFFFF8).w
 		beq.s	loc_C66
 		move.w	#$700,d0
@@ -609,9 +609,9 @@ loc_CAA:				; DATA XREF: ROM:off_B6Co
 		bsr.w	sub_103C
 
 loc_CAE:				; DATA XREF: ROM:off_B6Co
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		beq.w	locret_CBA
-		subq.w	#1,($FFFFF614).w
+		subq.w	#1,(v_demolength).w
 
 locret_CBA:				; CODE XREF: ROM:00000CB2j
 		rts
@@ -620,9 +620,9 @@ locret_CBA:				; CODE XREF: ROM:00000CB2j
 loc_CBC:				; DATA XREF: ROM:off_B6Co
 		bsr.w	sub_103C
 		bsr.w	sub_1732
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		beq.w	locret_CD0
-		subq.w	#1,($FFFFF614).w
+		subq.w	#1,(v_demolength).w
 
 locret_CD0:				; CODE XREF: ROM:00000CC8j
 		rts
@@ -634,7 +634,7 @@ loc_CD2:				; DATA XREF: ROM:off_B6Co
 ; ---------------------------------------------------------------------------
 
 loc_CD8:				; DATA XREF: ROM:off_B6Co
-		cmpi.b	#$10,($FFFFF600).w
+		cmpi.b	#$10,(v_gamemode).w
 		beq.w	loc_E02
 
 loc_CE2:				; DATA XREF: ROM:off_B6Co
@@ -705,9 +705,9 @@ DemoTime:
 loc_DEA:
 		jsr	(HudUpdate).l
 		bsr.w	loc_174E
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		beq.w	DemoTime_End
-		subq.w	#1,($FFFFF614).w
+		subq.w	#1,(v_demolength).w
 
 DemoTime_End:
 		rts
@@ -743,9 +743,9 @@ loc_E02:
 		bsr.w	Process_DMA
 		startZ80
 		bsr.w	PalCycle_S1SS
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		beq.w	locret_EA0
-		subq.w	#1,($FFFFF614).w
+		subq.w	#1,(v_demolength).w
 
 locret_EA0:				; CODE XREF: ROM:00000E98j
 		rts
@@ -843,9 +843,9 @@ loc_FA4:				; DATA XREF: ROM:off_B6Co
 		move.w	#$83,($FFFFF640).w
 		move.w	($FFFFF640).w,(a5)
 		startZ80
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		beq.w	locret_103A
-		subq.w	#1,($FFFFF614).w
+		subq.w	#1,(v_demolength).w
 
 locret_103A:				; CODE XREF: ROM:00001032j
 		rts
@@ -912,7 +912,7 @@ loc_110E:				; CODE XREF: ROM:00001118j
 		move.w	(vdp_control_port).l,d0
 		andi.w	#4,d0
 		beq.s	loc_110E
-		move.w	($FFFFF60C).w,d0
+		move.w	(v_vdp_buffer1).w,d0
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
 		move.w	#$8228,(vdp_control_port).l
@@ -930,7 +930,7 @@ loc_1166:				; CODE XREF: ROM:00001170j
 		move.w	(vdp_control_port).l,d0
 		andi.w	#4,d0
 		beq.s	loc_1166
-		move.w	($FFFFF60C).w,d0
+		move.w	(v_vdp_buffer1).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
 		move.l	(sp)+,d0
@@ -1013,7 +1013,7 @@ JoypadInit:				; CODE XREF: ROM:00000384p
 
 
 ReadJoypads:
-		lea	($FFFFF604).w,a0
+		lea	(v_jpadhold1).w,a0
 		lea	($A10003).l,a1
 		bsr.s	Joypad_Read
 		addq.w	#2,a1
@@ -1055,7 +1055,7 @@ VDPRegSetup_Loop:			; CODE XREF: VDPRegSetup+16j
 		move.w	(a2)+,(a0)
 		dbf	d7,VDPRegSetup_Loop
 		move.w	(VDPRegSetup_Array+2).l,d0
-		move.w	d0,($FFFFF60C).w
+		move.w	d0,(v_vdp_buffer1).w
 		move.w	#$8ADF,($FFFFF624).w
 		moveq	#0,d0
 		move.l	#$40000010,(vdp_control_port).l
@@ -1067,7 +1067,7 @@ VDPRegSetup_Loop:			; CODE XREF: VDPRegSetup+16j
 VDPRegSetup_ClearCRAM:			; CODE XREF: VDPRegSetup+4Aj
 		move.w	d0,(a1)
 		dbf	d7,VDPRegSetup_ClearCRAM
-		clr.l	($FFFFF616).w
+		clr.l	(v_scrposy_dup).w
 		clr.l	($FFFFF61A).w
 		move.l	d1,-(sp)
 		lea	(vdp_control_port).l,a5
@@ -1127,7 +1127,7 @@ ClearScreen_DMA2Wait:			; CODE XREF: ClearScreen+56j
 		move.w	#$8F02,(a5)
 
 loc_1388:
-		clr.l	($FFFFF616).w
+		clr.l	(v_scrposy_dup).w
 		clr.l	($FFFFF61A).w
 		lea	($FFFFF800).w,a1
 		moveq	#0,d0
@@ -1203,7 +1203,7 @@ Pause:					; CODE XREF: ROM:Level_MainLoopp
 		beq.s	Unpause
 		tst.w	($FFFFF63A).w
 		bne.s	Pause_AlreadyPaused
-		btst	#7,($FFFFF605).w
+		btst	#7,(v_jpadpress1).w
 		beq.s	Pause_DoNothing
 
 Pause_AlreadyPaused:			; CODE XREF: Pause+Cj
@@ -1217,21 +1217,21 @@ Pause_Loop:				; CODE XREF: Pause+5Aj
 		bsr.w	DelayProgram
 		tst.b	($FFFFFFE1).w
 		beq.s	Pause_CheckStart
-		btst	#6,($FFFFF605).w
+		btst	#6,(v_jpadpress1).w
 		beq.s	Pause_CheckBC
-		move.b	#4,($FFFFF600).w
+		move.b	#4,(v_gamemode).w
 		nop
 		bra.s	loc_1464
 ; ---------------------------------------------------------------------------
 
 Pause_CheckBC:				; CODE XREF: Pause+38j
-		btst	#4,($FFFFF604).w
+		btst	#4,(v_jpadhold1).w
 		bne.s	loc_1472
-		btst	#5,($FFFFF605).w
+		btst	#5,(v_jpadpress1).w
 		bne.s	loc_1472
 
 Pause_CheckStart:			; CODE XREF: Pause+30j
-		btst	#7,($FFFFF605).w
+		btst	#7,(v_jpadpress1).w
 		beq.s	Pause_Loop
 
 loc_1464:				; CODE XREF: Pause+42j
@@ -2552,7 +2552,7 @@ SegaScreen:				; CODE XREF: ROM:GameModeArrayj
 		move.w	#$8C81,(a6)
 		clr.b	($FFFFF64E).w
 		move	#$2700,sr
-		move.w	($FFFFF60C).w,d0
+		move.w	(v_vdp_buffer1).w,d0
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
 		bsr.w	ClearScreen
@@ -2588,7 +2588,7 @@ loc_316A:				; CODE XREF: ROM:00003154j
 		move.w	#0,($FFFFF634).w
 		move.w	#0,($FFFFF662).w
 		move.w	#0,($FFFFF660).w
-		move.w	($FFFFF60C).w,d0
+		move.w	(v_vdp_buffer1).w,d0
 		ori.b	#$40,d0	
 		move.w	d0,(vdp_control_port).l
 
@@ -2601,18 +2601,18 @@ Sega_WaitPalette:			; CODE XREF: ROM:000031A4j
 		bsr.w	PlaySound_Special
 		move.b	#$14,($FFFFF62A).w
 		bsr.w	DelayProgram
-		move.w	#$1E,($FFFFF614).w
+		move.w	#$1E,(v_demolength).w
 
 Sega_WaitEnd:				; CODE XREF: ROM:000031D4j
 		move.b	#2,($FFFFF62A).w
 		bsr.w	DelayProgram
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		beq.s	Sega_GoToTitleScreen
-		andi.b	#$80,($FFFFF605).w
+		andi.b	#$80,(v_jpadpress1).w
 		beq.s	Sega_WaitEnd
 
 Sega_GoToTitleScreen:			; CODE XREF: ROM:000031CCj
-		move.b	#4,($FFFFF600).w
+		move.b	#4,(v_gamemode).w
 		rts
 ; ---------------------------------------------------------------------------
 		align 2
@@ -2733,7 +2733,7 @@ loc_3330:
 		bsr.w	PlaySound_Special
 		move.b	#0,($FFFFFFFA).w
 		move.w	#0,(f_2player).w
-		move.w	#$178,($FFFFF614).w
+		move.w	#$178,(v_demolength).w
 		lea	(v_objspace+$80).w,a1
 		moveq	#0,d0
 		move.w	#$F,d1
@@ -2753,7 +2753,7 @@ loc_339A:				; CODE XREF: ROM:0000339Cj
 		move.w	#$300,(v_zone).w
 		move.w	#4,($FFFFEED2).w
 		move.w	#0,(v_tracktails).w
-		move.w	($FFFFF60C).w,d0
+		move.w	(v_vdp_buffer1).w,d0
 		ori.b	#$40,d0	
 		move.w	d0,(vdp_control_port).l
 		bsr.w	Pal_FadeTo
@@ -2777,7 +2777,7 @@ Title_RegionJ:				; CODE XREF: ROM:00003416j
 LevelSelectCheat:			; CODE XREF: ROM:0000341Ej
 		move.w	($FFFFFFE4).w,d0
 		adda.w	d0,a0
-		move.b	($FFFFF605).w,d0
+		move.b	(v_jpadpress1).w,d0
 		andi.b	#$F,d0
 		cmp.b	(a0),d0
 		bne.s	Title_Cheat_NoMatch
@@ -2811,15 +2811,15 @@ Title_Cheat_NoMatch:			; CODE XREF: ROM:00003436j
 
 Title_Cheat_CountC:			; CODE XREF: ROM:0000343Ej
 					; ROM:0000346Aj ...
-		move.b	($FFFFF605).w,d0
+		move.b	(v_jpadpress1).w,d0
 		andi.b	#$20,d0	
 		beq.s	Title_Cheat_NoC
 		addq.w	#1,($FFFFFFE6).w
 
 Title_Cheat_NoC:			; CODE XREF: ROM:00003486j
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		beq.w	Demo
-		andi.b	#$80,($FFFFF605).w
+		andi.b	#$80,(v_jpadpress1).w
 		beq.w	TitleScreen_Loop
 
 Title_CheckLvlSel:			; CODE XREF: ROM:0000365Cj
@@ -2834,7 +2834,7 @@ Title_CheckLvlSel:			; CODE XREF: ROM:0000365Cj
 LevelSelect_ClearScroll:		; CODE XREF: ROM:000034B8j
 		move.l	d0,(a1)+
 		dbf	d1,LevelSelect_ClearScroll
-		move.l	d0,($FFFFF616).w
+		move.l	d0,(v_scrposy_dup).w
 		move	#$2700,sr
 		lea	(vdp_data_port).l,a6
 		move.l	#$60000003,(vdp_control_port).l
@@ -2853,10 +2853,10 @@ LevelSelect_Loop:			; CODE XREF: ROM:000034F8j
 		bsr.w	RunPLC
 		tst.l	($FFFFF680).w
 		bne.s	LevelSelect_Loop
-		andi.b	#$F0,($FFFFF605).w
+		andi.b	#$F0,(v_jpadpress1).w
 		beq.s	LevelSelect_Loop
 		move.w	#0,(f_2player).w
-		btst	#4,($FFFFF604).w
+		btst	#4,(v_jpadhold1).w
 		beq.s	loc_3516
 		move.w	#1,(f_2player).w
 
@@ -2885,13 +2885,13 @@ loc_3546:				; CODE XREF: ROM:0000353Ej
 ; ---------------------------------------------------------------------------
 
 loc_354C:				; CODE XREF: ROM:00003532j
-		move.b	#$18,($FFFFF600).w
+		move.b	#$18,(v_gamemode).w
 		move.w	#$600,(v_zone).w
 		rts
 ; ---------------------------------------------------------------------------
 
 loc_355A:				; CODE XREF: ROM:00003538j
-		move.b	#$1C,($FFFFF600).w
+		move.b	#$1C,(v_gamemode).w
 		move.b	#$91,d0
 		bsr.w	PlaySound_Special
 		move.w	#0,($FFFFFFF4).w
@@ -2904,7 +2904,7 @@ loc_3570:				; CODE XREF: ROM:0000351Ej
 		bmi.w	LevelSelect_Loop
 		cmpi.w	#$700,d0
 		bne.s	LevelSelect_Level
-		move.b	#$10,($FFFFF600).w
+		move.b	#$10,(v_gamemode).w
 		clr.w	(v_zone).w
 		move.b	#3,($FFFFFE12).w
 		moveq	#0,d0
@@ -2928,7 +2928,7 @@ LevelSelect_Level:			; CODE XREF: ROM:0000357Ej
 		move.w	d0,(v_zone).w
 
 PlayLevel:				; CODE XREF: ROM:000034A2j
-		move.b	#$C,($FFFFF600).w
+		move.b	#$C,(v_gamemode).w
 		move.b	#3,($FFFFFE12).w
 		moveq	#0,d0
 		move.w	d0,($FFFFFE20).w
@@ -2949,7 +2949,7 @@ LvlSelCode_US:	dc.b   1,  2,  2,  2,  2,  1,  0,$FF; 0	; DATA XREF: ROM:00003418
 ; ---------------------------------------------------------------------------
 
 Demo:					; CODE XREF: ROM:00003490j
-		move.w	#$1E,($FFFFF614).w
+		move.w	#$1E,(v_demolength).w
 
 loc_3630:				; CODE XREF: ROM:00003664j
 		move.b	#4,($FFFFF62A).w
@@ -2960,14 +2960,14 @@ loc_3630:				; CODE XREF: ROM:00003664j
 		move.w	d0,(v_objspace+8).w
 		cmpi.w	#$1C00,d0
 		bcs.s	RunDemo
-		move.b	#0,($FFFFF600).w
+		move.b	#0,(v_gamemode).w
 		rts
 ; ---------------------------------------------------------------------------
 
 RunDemo:				; CODE XREF: ROM:0000364Cj
-		andi.b	#$80,($FFFFF605).w
+		andi.b	#$80,(v_jpadpress1).w
 		bne.w	Title_CheckLvlSel
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		bne.w	loc_3630
 		move.b	#$E0,d0
 		bsr.w	PlaySound_Special
@@ -2983,7 +2983,7 @@ RunDemo:				; CODE XREF: ROM:0000364Cj
 
 loc_3694:				; CODE XREF: ROM:0000368Cj
 		move.w	#1,($FFFFFFF0).w
-		move.b	#8,($FFFFF600).w
+		move.b	#8,(v_gamemode).w
 		cmpi.w	#$300,d0
 		bne.s	loc_36AC
 		move.w	#1,(f_2player).w
@@ -2991,7 +2991,7 @@ loc_3694:				; CODE XREF: ROM:0000368Cj
 loc_36AC:				; CODE XREF: ROM:000036A4j
 		cmpi.w	#$600,d0
 		bne.s	loc_36C0
-		move.b	#$10,($FFFFF600).w
+		move.b	#$10,(v_gamemode).w
 		clr.w	(v_zone).w
 		clr.b	($FFFFFE16).w
 
@@ -3015,7 +3015,7 @@ Demo_Levels:	dc.w  $200, $300	; 0
 
 
 LevelSelect_Controls:			; CODE XREF: ROM:000034ECp
-		move.b	($FFFFF605).w,d1
+		move.b	(v_jpadpress1).w,d1
 		andi.b	#3,d1
 		bne.s	loc_3706
 		subq.w	#1,($FFFFFF80).w
@@ -3023,7 +3023,7 @@ LevelSelect_Controls:			; CODE XREF: ROM:000034ECp
 
 loc_3706:				; CODE XREF: LevelSelect_Controls+8j
 		move.w	#$B,($FFFFFF80).w
-		move.b	($FFFFF604).w,d1
+		move.b	(v_jpadhold1).w,d1
 		andi.b	#3,d1
 		beq.s	loc_3740
 		move.w	($FFFFFF82).w,d0
@@ -3053,7 +3053,7 @@ loc_3740:				; CODE XREF: LevelSelect_Controls+Ej
 					; LevelSelect_Controls+1Ej
 		cmpi.w	#$14,($FFFFFF82).w
 		bne.s	locret_377A
-		move.b	($FFFFF605).w,d1
+		move.b	(v_jpadpress1).w,d1
 		andi.b	#$C,d1
 		beq.s	locret_377A
 		move.w	($FFFFFF84).w,d0
@@ -3296,7 +3296,7 @@ MusicList:	dc.b $81,$82,$83,$84,$85,$86,$8D,  0; 0	; DATA XREF: ROM:loc_3CE6t
 
 Level:					; CODE XREF: ROM:000003A4j
 					; ROM:000003A8j ...
-		bset	#7,($FFFFF600).w
+		bset	#7,(v_gamemode).w
 		tst.w	($FFFFFFF0).w
 		bmi.s	loc_3B38
 		move.b	#$E0,d0
@@ -3499,14 +3499,14 @@ LevelInit_LoadTails:			; CODE XREF: ROM:00003D70j
 LevelInit_SkipTails:			; CODE XREF: ROM:00003D78j
 		tst.b	($FFFFFFE2).w
 		beq.s	loc_3DA6
-		btst	#6,($FFFFF604).w
+		btst	#6,(v_jpadhold1).w
 		beq.s	loc_3DA6
 		move.b	#1,($FFFFFFFA).w
 
 loc_3DA6:				; CODE XREF: ROM:00003D96j
 					; ROM:00003D9Ej
-		move.w	#0,($FFFFF602).w
-		move.w	#0,($FFFFF604).w
+		move.w	#0,(v_jpadhold2).w
+		move.w	#0,(v_jpadhold1).w
 		tst.b	($FFFFF730).w
 		beq.s	loc_3DD0
 		move.b	#4,(v_objspace+$780).w
@@ -3567,13 +3567,13 @@ loc_3E78:				; CODE XREF: ROM:00003E64j
 		lea	(Demo_2P).l,a1
 		move.b	1(a1),($FFFFF742).w
 		subq.b	#1,($FFFFF742).w
-		move.w	#$668,($FFFFF614).w
+		move.w	#$668,(v_demolength).w
 		tst.w	($FFFFFFF0).w
 		bpl.s	loc_3EB2
-		move.w	#$21C,($FFFFF614).w
+		move.w	#$21C,(v_demolength).w
 		cmpi.w	#4,($FFFFFFF4).w
 		bne.s	loc_3EB2
-		move.w	#$1FE,($FFFFF614).w
+		move.w	#$1FE,(v_demolength).w
 
 loc_3EB2:				; CODE XREF: ROM:00003E9Cj
 					; ROM:00003EAAj
@@ -3614,7 +3614,7 @@ Level_ClrTitleCard:			; CODE XREF: ROM:00003EE8j
 		jsr	(LoadPLC).l
 
 Level_StartGame:			; CODE XREF: ROM:00003EFAj
-		bclr	#7,($FFFFF600).w
+		bclr	#7,(v_gamemode).w
 
 Level_MainLoop:				; CODE XREF: ROM:00003F90j
 					; ROM:00003FA8j
@@ -3650,9 +3650,9 @@ loc_3F54:				; CODE XREF: ROM:00003F4Ej
 		bsr.w	SignpostArtLoad
 		jsr	(BuildSprites).l
 		jsr	(ObjPosLoad).l
-		cmpi.b	#8,($FFFFF600).w
+		cmpi.b	#8,(v_gamemode).w
 		beq.s	loc_3F96
-		cmpi.b	#$C,($FFFFF600).w
+		cmpi.b	#$C,(v_gamemode).w
 		beq.w	Level_MainLoop
 		rts
 ; ---------------------------------------------------------------------------
@@ -3660,26 +3660,26 @@ loc_3F54:				; CODE XREF: ROM:00003F4Ej
 loc_3F96:				; CODE XREF: ROM:00003F88j
 		tst.w	($FFFFFE02).w
 		bne.s	loc_3FB4
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		beq.s	loc_3FB4
-		cmpi.b	#8,($FFFFF600).w
+		cmpi.b	#8,(v_gamemode).w
 		beq.w	Level_MainLoop
-		move.b	#0,($FFFFF600).w
+		move.b	#0,(v_gamemode).w
 		rts
 ; ---------------------------------------------------------------------------
 
 loc_3FB4:				; CODE XREF: ROM:00003F9Aj
 					; ROM:00003FA0j
-		cmpi.b	#8,($FFFFF600).w
+		cmpi.b	#8,(v_gamemode).w
 		bne.s	loc_3FCE
-		move.b	#0,($FFFFF600).w
+		move.b	#0,(v_gamemode).w
 		tst.w	($FFFFFFF0).w
 		bpl.s	loc_3FCE
-		move.b	#$1C,($FFFFF600).w
+		move.b	#$1C,(v_gamemode).w
 
 loc_3FCE:				; CODE XREF: ROM:00003FBAj
 					; ROM:00003FC6j
-		move.w	#$3C,($FFFFF614).w ; "<"
+		move.w	#$3C,(v_demolength).w ; "<"
 		move.w	#$3F,($FFFFF626).w
 		clr.w	($FFFFF794).w
 
@@ -3696,7 +3696,7 @@ loc_3FDE:				; CODE XREF: ROM:00004012j
 		bsr.w	Pal_FadeOut
 
 loc_400E:				; CODE XREF: ROM:00004002j
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		bne.s	loc_3FDE
 		rts
 
@@ -4070,12 +4070,12 @@ loc_4354:				; CODE XREF: ROM:00004342j
 		move.w	#0,$12(a1)
 		move.b	#$F,$1C(a1)
 		bset	#1,$22(a1)
-		btst	#0,($FFFFF604).w
+		btst	#0,(v_jpadhold1).w
 		beq.s	loc_437E
 		subq.w	#1,$C(a1)
 
 loc_437E:				; CODE XREF: ROM:00004378j
-		btst	#1,($FFFFF604).w
+		btst	#1,(v_jpadhold1).w
 		beq.s	locret_438A
 		addq.w	#1,$C(a1)
 
@@ -4178,7 +4178,7 @@ MoveSonic_DemoRecord:			; unused subroutine for	recording demos
 loc_4474:
 		move.w	($FFFFF790).w,d0
 		adda.w	d0,a1
-		move.b	($FFFFF604).w,d0
+		move.b	(v_jpadhold1).w,d0
 		cmp.b	(a1),d0
 		bne.s	loc_4490
 		addq.b	#1,1(a1)
@@ -4222,18 +4222,18 @@ locret_44E2:				; CODE XREF: MoveSonicInDemo+44j
 ; ---------------------------------------------------------------------------
 
 MoveDemo_On:				; CODE XREF: MoveSonicInDemo+4j
-		tst.b	($FFFFF604).w
+		tst.b	(v_jpadhold1).w
 		bpl.s	loc_44F6
 		tst.w	($FFFFFFF0).w
 		bmi.s	loc_44F6
-		move.b	#4,($FFFFF600).w
+		move.b	#4,(v_gamemode).w
 
 loc_44F6:				; CODE XREF: MoveSonicInDemo+82j
 					; MoveSonicInDemo+88j
 		lea	(Demo_Index).l,a1
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
-		cmpi.b	#$10,($FFFFF600).w
+		cmpi.b	#$10,(v_gamemode).w
 		bne.s	loc_450C
 		moveq	#6,d0
 
@@ -4243,7 +4243,7 @@ loc_450C:				; CODE XREF: MoveSonicInDemo+A2j
 		move.w	($FFFFF790).w,d0
 		adda.w	d0,a1
 		move.b	(a1),d0
-		lea	($FFFFF604).w,a0
+		lea	(v_jpadhold1).w,a0
 		move.b	d0,d1
 		moveq	#0,d2
 		eor.b	d2,d0
@@ -4689,7 +4689,7 @@ GM_Special:				; CODE XREF: ROM:000003ACj
 		move.w	#$8004,(a6)
 		move.w	#$8AAF,($FFFFF624).w
 		move.w	#$9011,(a6)
-		move.w	($FFFFF60C).w,d0
+		move.w	(v_vdp_buffer1).w,d0
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
 		bsr.w	ClearScreen
@@ -4760,16 +4760,16 @@ loc_50CC:				; CODE XREF: ROM:000050CEj
 		clr.w	($FFFFFE20).w
 		clr.b	($FFFFFE1B).w
 		move.w	#0,($FFFFFE08).w
-		move.w	#$708,($FFFFF614).w
+		move.w	#$708,(v_demolength).w
 		tst.b	($FFFFFFE2).w
 		beq.s	loc_5158
-		btst	#6,($FFFFF604).w
+		btst	#6,(v_jpadhold1).w
 		beq.s	loc_5158
 		move.b	#1,($FFFFFFFA).w
 
 loc_5158:				; CODE XREF: ROM:00005148j
 					; ROM:00005150j
-		move.w	($FFFFF60C).w,d0
+		move.w	(v_vdp_buffer1).w,d0
 		ori.b	#$40,d0	
 		move.w	d0,(vdp_control_port).l
 		bsr.w	Pal_MakeWhite
@@ -4779,28 +4779,28 @@ loc_516A:				; CODE XREF: ROM:000051ACj
 		move.b	#$A,($FFFFF62A).w
 		bsr.w	DelayProgram
 		bsr.w	MoveSonicInDemo
-		move.w	($FFFFF604).w,($FFFFF602).w
+		move.w	(v_jpadhold1).w,(v_jpadhold2).w
 		jsr	(ObjectsLoad).l
 		jsr	(BuildSprites).l
 		jsr	(S1SS_ShowLayout).l	; leftover from	Sonic 1
 		bsr.w	S1SS_BgAnimate
 		tst.w	($FFFFFFF0).w
 		beq.s	loc_51A6
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		beq.w	loc_52D4
 
 loc_51A6:				; CODE XREF: ROM:0000519Cj
-		cmpi.b	#$10,($FFFFF600).w
+		cmpi.b	#$10,(v_gamemode).w
 		beq.w	loc_516A
 		tst.w	($FFFFFFF0).w
 		bne.w	loc_52DC
-		move.b	#$C,($FFFFF600).w
+		move.b	#$C,(v_gamemode).w
 		cmpi.w	#$503,(v_zone).w
 		bcs.s	loc_51CA
 		clr.w	(v_zone).w
 
 loc_51CA:				; CODE XREF: ROM:000051C4j
-		move.w	#$3C,($FFFFF614).w ; "<"
+		move.w	#$3C,(v_demolength).w ; "<"
 		move.w	#$3F,($FFFFF626).w 
 		clr.w	($FFFFF794).w
 
@@ -4808,7 +4808,7 @@ loc_51DA:				; CODE XREF: ROM:00005218j
 		move.b	#$16,($FFFFF62A).w
 		bsr.w	DelayProgram
 		bsr.w	MoveSonicInDemo
-		move.w	($FFFFF604).w,($FFFFF602).w
+		move.w	(v_jpadhold1).w,(v_jpadhold2).w
 		jsr	(ObjectsLoad).l
 		jsr	(BuildSprites).l
 		jsr	(S1SS_ShowLayout).l	; leftover from	Sonic 1
@@ -4819,7 +4819,7 @@ loc_51DA:				; CODE XREF: ROM:00005218j
 		bsr.w	Pal_ToWhite
 
 loc_5214:				; CODE XREF: ROM:00005208j
-		tst.w	($FFFFF614).w
+		tst.w	(v_demolength).w
 		bne.s	loc_51DA
 		move	#$2700,sr
 		lea	(vdp_control_port).l,a6
@@ -4874,12 +4874,12 @@ loc_529C:				; CODE XREF: ROM:000052BEj
 
 loc_52D4:				; CODE XREF: ROM:000051A2j
 					; ROM:000052E2j
-		move.b	#0,($FFFFF600).w
+		move.b	#0,(v_gamemode).w
 		rts
 ; ---------------------------------------------------------------------------
 
 loc_52DC:				; CODE XREF: ROM:000051B4j
-		cmpi.b	#$C,($FFFFF600).w
+		cmpi.b	#$C,(v_gamemode).w
 		beq.s	loc_52D4
 		rts
 
@@ -4983,12 +4983,12 @@ loc_53D0:				; CODE XREF: PalCycle_S1SS+2Aj
 		move.w	#$8200,d0
 		move.b	(a1)+,d0
 		move.w	d0,(a6)
-		move.b	(a1),($FFFFF616).w
+		move.b	(a1),(v_scrposy_dup).w
 		move.w	#$8400,d0
 		move.b	(a0)+,d0
 		move.w	d0,(a6)
 		move.l	#$40000010,(vdp_control_port).l
-		move.l	($FFFFF616).w,(vdp_data_port).l
+		move.l	(v_scrposy_dup).w,(vdp_data_port).l
 		moveq	#0,d0
 		move.b	(a0)+,d0
 		bmi.s	loc_5426
@@ -7213,7 +7213,7 @@ locret_796E:				; CODE XREF: ROM:00007962j
 DynResize_EHZ2_03:			; DATA XREF: ROM:0000790Ao
 		tst.b	($FFFFF7A7).w
 		beq.s	DynResize_EHZ3
-		move.b	#0,($FFFFF600).w
+		move.b	#0,(v_gamemode).w
 
 DynResize_EHZ3:				; CODE XREF: ROM:00007974j
 		rts
@@ -12154,7 +12154,7 @@ loc_B416:				; DATA XREF: ROM:Obj0F_Indexo
 
 loc_B438:				; DATA XREF: ROM:0000B412o
 					; ROM:0000B414o
-		move.b	($FFFFF605).w,d0
+		move.b	(v_jpadpress1).w,d0
 		btst	#5,d0
 		beq.s	loc_B44C
 		addq.b	#1,$1A(a0)
@@ -12655,7 +12655,7 @@ loc_BAF2:				; CODE XREF: ROM:0000BAE4j
 ; ---------------------------------------------------------------------------
 
 loc_BAFE:				; DATA XREF: ROM:0000BA96o
-		move.b	($FFFFF605).w,d0
+		move.b	(v_jpadpress1).w,d0
 		andi.b	#$70,d0	; "p"
 		bne.s	loc_BB1E
 		btst	#0,$1A(a0)
@@ -12670,10 +12670,10 @@ loc_BB1E:				; CODE XREF: ROM:0000BB06j
 					; ROM:0000BB14j
 		tst.b	($FFFFFE1A).w
 		bne.s	loc_BB38
-		move.b	#$14,($FFFFF600).w
+		move.b	#$14,(v_gamemode).w
 		tst.b	($FFFFFE18).w
 		bne.s	loc_BB42
-		move.b	#0,($FFFFF600).w
+		move.b	#0,(v_gamemode).w
 		bra.s	loc_BB42
 ; ---------------------------------------------------------------------------
 
@@ -12835,7 +12835,7 @@ loc_BC80:				; DATA XREF: ROM:0000BB5Ao
 		move.w	d0,(v_zone).w
 		tst.w	d0
 		bne.s	loc_BCAA
-		move.b	#0,($FFFFF600).w
+		move.b	#0,(v_gamemode).w
 		bra.s	locret_BCC2
 ; ---------------------------------------------------------------------------
 
@@ -12843,7 +12843,7 @@ loc_BCAA:				; CODE XREF: ROM:0000BCA0j
 		clr.b	($FFFFFE30).w
 		tst.b	($FFFFF7CD).w
 		beq.s	loc_BCBC
-		move.b	#$10,($FFFFF600).w
+		move.b	#$10,(v_gamemode).w
 		bra.s	locret_BCC2
 ; ---------------------------------------------------------------------------
 
@@ -17787,7 +17787,7 @@ loc_F0C4:				; DATA XREF: ROM:0000EFD2o
 		btst	#1,(v_objspace+$22).w
 		bne.s	loc_F0E0
 		move.b	#1,($FFFFF7CC).w
-		move.w	#$800,($FFFFF602).w
+		move.w	#$800,(v_jpadhold2).w
 
 loc_F0E0:				; CODE XREF: ROM:0000F0D2j
 		tst.b	(v_objspace).w
@@ -18834,7 +18834,7 @@ loc_FA88:				; CODE XREF: ROM:0000FA92j
 Obj01_Control:				; DATA XREF: ROM:0000FA18o
 		tst.w	($FFFFFFFA).w
 		beq.s	loc_FAB0
-		btst	#4,($FFFFF605).w
+		btst	#4,(v_jpadpress1).w
 		beq.s	loc_FAB0
 		move.w	#1,($FFFFFE08).w
 		clr.b	($FFFFF7CC).w
@@ -18845,7 +18845,7 @@ loc_FAB0:				; CODE XREF: ROM:0000FA9Aj
 					; ROM:0000FAA2j
 		tst.b	($FFFFF7CC).w
 		bne.s	loc_FABC
-		move.w	($FFFFF604).w,($FFFFF602).w
+		move.w	(v_jpadhold1).w,(v_jpadhold2).w
 
 loc_FABC:				; CODE XREF: ROM:0000FAB4j
 		btst	#0,($FFFFF7C8).w
@@ -18960,7 +18960,7 @@ CopySonicMovesForTails:			; CODE XREF: ROM:loc_FA88p
 		move.w	$C(a0),(a1)+
 		addq.b	#4,($FFFFEED3).w
 		lea	(v_tracksonic).w,a1
-		move.w	($FFFFF604).w,(a1,d0.w)
+		move.w	(v_jpadhold1).w,(a1,d0.w)
 		rts
 ; End of function CopySonicMovesForTails
 
@@ -19106,12 +19106,12 @@ Sonic_Move:				; CODE XREF: ROM:0000FCAEp
 		bne.w	loc_FE58
 		tst.w	$2E(a0)
 		bne.w	loc_FE2C
-		btst	#2,($FFFFF602).w
+		btst	#2,(v_jpadhold2).w
 		beq.s	loc_FD66
 		bsr.w	Sonic_MoveLeft
 
 loc_FD66:				; CODE XREF: Sonic_Move+22j
-		btst	#3,($FFFFF602).w
+		btst	#3,(v_jpadhold2).w
 		beq.s	loc_FD72
 		bsr.w	Sonic_MoveRight
 
@@ -19177,20 +19177,20 @@ loc_FE06:				; CODE XREF: Sonic_Move+B8j
 
 Sonic_LookUp:				; CODE XREF: Sonic_Move+7Cj
 					; Sonic_Move+9Cj ...
-		btst	#0,($FFFFF602).w
+		btst	#0,(v_jpadhold2).w
 		beq.s	Sonic_Duck
 		move.b	#7,$1C(a0)
 		bra.s	loc_FE2C
 ; ---------------------------------------------------------------------------
 
 Sonic_Duck:				; CODE XREF: Sonic_Move+D6j
-		btst	#1,($FFFFF602).w
+		btst	#1,(v_jpadhold2).w
 		beq.s	loc_FE2C
 		move.b	#8,$1C(a0)
 
 loc_FE2C:				; CODE XREF: Sonic_Move+18j
 					; Sonic_Move+40j ...
-		move.b	($FFFFF602).w,d0
+		move.b	(v_jpadhold2).w,d0
 		andi.b	#$C,d0
 		bne.s	loc_FE58
 		move.w	$14(a0),d0
@@ -19419,12 +19419,12 @@ Sonic_RollSpeed:			; CODE XREF: ROM:0000FCFCp
 		bne.w	loc_1008A
 		tst.w	$2E(a0)
 		bne.s	loc_10046
-		btst	#2,($FFFFF602).w
+		btst	#2,(v_jpadhold2).w
 		beq.s	loc_1003A
 		bsr.w	Sonic_RollLeft
 
 loc_1003A:				; CODE XREF: Sonic_RollSpeed+26j
-		btst	#3,($FFFFF602).w
+		btst	#3,(v_jpadhold2).w
 		beq.s	loc_10046
 		bsr.w	Sonic_RollRight
 
@@ -19542,7 +19542,7 @@ Sonic_ChgJumpDir:			; CODE XREF: ROM:0000FCCEp
 		btst	#4,$22(a0)
 		bne.s	loc_10150
 		move.w	$10(a0),d0
-		btst	#2,($FFFFF602).w
+		btst	#2,(v_jpadhold2).w
 		beq.s	loc_10136
 		bset	#0,$22(a0)
 		sub.w	d5,d0
@@ -19554,7 +19554,7 @@ Sonic_ChgJumpDir:			; CODE XREF: ROM:0000FCCEp
 
 loc_10136:				; CODE XREF: Sonic_ChgJumpDir+1Cj
 					; Sonic_ChgJumpDir+2Cj
-		btst	#3,($FFFFF602).w
+		btst	#3,(v_jpadhold2).w
 		beq.s	loc_1014C
 		bclr	#0,$22(a0)
 		add.w	d5,d0
@@ -19676,10 +19676,10 @@ Sonic_Roll:				; CODE XREF: ROM:0000FCB2p
 loc_10220:				; CODE XREF: Sonic_Roll+Aj
 		cmpi.w	#$80,d0	
 		bcs.s	Obj01_NoRoll
-		move.b	($FFFFF602).w,d0
+		move.b	(v_jpadhold2).w,d0
 		andi.b	#$C,d0
 		bne.s	Obj01_NoRoll
-		btst	#1,($FFFFF602).w
+		btst	#1,(v_jpadhold2).w
 		bne.s	loc_1023A
 
 Obj01_NoRoll:				; CODE XREF: Sonic_Roll+4j
@@ -19715,7 +19715,7 @@ locret_10276:				; CODE XREF: Sonic_Roll+5Cj
 
 Sonic_Jump:				; CODE XREF: ROM:0000FCA6p
 					; ROM:Obj01_MdRollp
-		move.b	($FFFFF603).w,d0
+		move.b	(v_jpadpress2).w,d0
 		andi.b	#$70,d0	; "p"
 		beq.w	locret_1031C
 		moveq	#0,d0
@@ -19783,7 +19783,7 @@ Sonic_JumpHeight:			; CODE XREF: ROM:Obj01_MdJumpp
 loc_1033C:				; CODE XREF: Sonic_JumpHeight+10j
 		cmp.w	$12(a0),d1
 		ble.s	locret_10350
-		move.b	($FFFFF602).w,d0
+		move.b	(v_jpadhold2).w,d0
 		andi.b	#$70,d0	; "p"
 		bne.s	locret_10350
 		move.w	d1,$12(a0)
@@ -19811,7 +19811,7 @@ Sonic_Spindash:				; CODE XREF: ROM:Obj01_MdNormalp
 		bne.s	loc_10396
 		cmpi.b	#8,$1C(a0)
 		bne.s	locret_10394
-		move.b	($FFFFF603).w,d0
+		move.b	(v_jpadpress2).w,d0
 		andi.b	#$70,d0	; "p"
 		beq.w	locret_10394
 		move.b	#9,$1C(a0)
@@ -19826,7 +19826,7 @@ locret_10394:				; CODE XREF: Sonic_Spindash+Cj
 ; ---------------------------------------------------------------------------
 
 loc_10396:				; CODE XREF: Sonic_Spindash+4j
-		move.b	($FFFFF602).w,d0
+		move.b	(v_jpadhold2).w,d0
 		btst	#1,d0
 		bne.s	loc_103DC
 		move.b	#$E,$16(a0)
@@ -19846,7 +19846,7 @@ loc_103D4:				; CODE XREF: Sonic_Spindash+6Cj
 ; ---------------------------------------------------------------------------
 
 loc_103DC:				; CODE XREF: Sonic_Spindash+3Cj
-		move.b	($FFFFF603).w,d0
+		move.b	(v_jpadpress2).w,d0
 		andi.b	#$70,d0	; "p"
 		beq.w	loc_103EA
 		nop
@@ -20321,7 +20321,7 @@ locret_107E6:				; CODE XREF: Sonic_HurtStop+1Aj
 loc_107E8:				; CODE XREF: ROM:00010760j
 		cmpi.b	#$B,$1C(a0)
 		bne.s	loc_107FA
-		move.b	($FFFFF605).w,d0
+		move.b	(v_jpadpress1).w,d0
 		andi.b	#$7F,d0	
 		beq.s	loc_10804
 
@@ -27094,7 +27094,7 @@ Obj04_Main:				; DATA XREF: ROM:000154E4o
 		move.w	d1,$C(a0)
 		tst.b	$32(a0)
 		bne.s	loc_15530
-		btst	#7,($FFFFF605).w
+		btst	#7,(v_jpadpress1).w
 		beq.s	loc_15540
 		addq.b	#3,$1A(a0)
 		move.b	#1,$32(a0)
@@ -31351,14 +31351,14 @@ loc_185F2:				; DATA XREF: ROM:off_185EEo
 		move.b	d0,$1A(a0)
 		move.b	#0,1(a0)
 		move.b	#0,$18(a0)
-		cmpi.b	#4,($FFFFF600).w
+		cmpi.b	#4,(v_gamemode).w
 		bne.s	loc_18660
 		move.w	#$300,2(a0)
 		bsr.w	j_ModifySpriteAttr_2P_4
 		move.b	#$A,$1A(a0)
 		tst.b	($FFFFFFE3).w
 		beq.s	loc_18660
-		cmpi.b	#$72,($FFFFF604).w ; "r"
+		cmpi.b	#$72,(v_jpadhold1).w ; "r"
 		bne.s	loc_18660
 
 loc_1864E:
@@ -32415,7 +32415,7 @@ Obj3E_Switched:				; DATA XREF: ROM:00019514o
 		clr.b	($FFFFFE1E).w
 		clr.b	($FFFFF7AA).w
 		move.b	#1,($FFFFF7CC).w
-		move.w	#$800,($FFFFF602).w
+		move.w	#$800,(v_jpadhold2).w
 		clr.b	$25(a0)
 		bclr	#3,(v_objspace+$22).w
 		bset	#1,(v_objspace+$22).w
@@ -33778,7 +33778,7 @@ loc_1A3DC:				; DATA XREF: ROM:Obj09_Indexo
 loc_1A41C:				; DATA XREF: ROM:0001A3D6o
 		tst.w	($FFFFFFFA).w
 		beq.s	loc_1A430
-		btst	#4,($FFFFF605).w
+		btst	#4,(v_jpadpress1).w
 		beq.s	loc_1A430
 		move.w	#1,($FFFFFE08).w
 
@@ -33826,17 +33826,17 @@ Obj09_Display:				; CODE XREF: ROM:0001A464j
 
 Obj09_Move:				; CODE XREF: ROM:0001A45Cp
 					; ROM:0001A46Ap
-		btst	#2,($FFFFF602).w
+		btst	#2,(v_jpadhold2).w
 		beq.s	loc_1A4A4
 		bsr.w	Obj09_MoveLeft
 
 loc_1A4A4:				; CODE XREF: Obj09_Move+6j
-		btst	#3,($FFFFF602).w
+		btst	#3,(v_jpadhold2).w
 		beq.s	loc_1A4B0
 		bsr.w	Obj09_MoveRight
 
 loc_1A4B0:				; CODE XREF: Obj09_Move+12j
-		move.b	($FFFFF602).w,d0
+		move.b	(v_jpadhold2).w,d0
 		andi.b	#$C,d0
 		bne.s	loc_1A4E0
 		move.w	$14(a0),d0
@@ -33953,7 +33953,7 @@ locret_1A58C:				; CODE XREF: Obj09_MoveRight+1Ej
 
 
 Obj09_Jump:				; CODE XREF: ROM:Obj09_OnWallp
-		move.b	($FFFFF603).w,d0
+		move.b	(v_jpadpress2).w,d0
 		andi.b	#$70,d0	; "p"
 		beq.s	locret_1A5D0
 		move.b	($FFFFF780).w,d0
@@ -33987,7 +33987,7 @@ nullsub_2:				; CODE XREF: ROM:Obj09_InAirp
 		move.w	#$FC00,d1
 		cmp.w	$12(a0),d1
 		ble.s	locret_1A5EC
-		move.b	($FFFFF602).w,d0
+		move.b	(v_jpadhold2).w,d0
 		andi.b	#$70,d0	; "p"
 		bne.s	locret_1A5EC
 		move.w	d1,$12(a0)
@@ -34026,7 +34026,7 @@ loc_1A618:				; DATA XREF: ROM:0001A3D8o
 		addi.w	#$40,($FFFFF782).w 
 		cmpi.w	#$1800,($FFFFF782).w
 		bne.s	loc_1A62C
-		move.b	#$C,($FFFFF600).w
+		move.b	#$C,(v_gamemode).w
 
 loc_1A62C:				; CODE XREF: ROM:0001A624j
 		cmpi.w	#$3000,($FFFFF782).w
@@ -34049,7 +34049,7 @@ loc_1A64A:				; CODE XREF: ROM:0001A632j
 loc_1A66C:				; DATA XREF: ROM:0001A3DAo
 		subq.w	#1,$38(a0)
 		bne.s	loc_1A678
-		move.b	#$C,($FFFFF600).w
+		move.b	#$C,(v_gamemode).w
 
 loc_1A678:				; CODE XREF: ROM:0001A670j
 		jsr	Sonic_Animate
@@ -34622,7 +34622,7 @@ AnimCue_EHZ:	dc.w 4			; DATA XREF: ROM:DynArtCue_Indexo
 		dc.b   2, $B		; 10
 		dc.b   0, $B		; 12
 		dc.b   2, $B		; 14
-		dc.l Art_EHZFlower5+$1000000
+		dc.l Art_EHZPulsingBall+$1000000
 		dc.w $7380
 		dc.b 6
 		dc.b 2
@@ -35593,7 +35593,7 @@ Debug_Init:				; DATA XREF: ROM:DebugIndexo
 		andi.w	#$3FF,(v_bgscreenposy).w
 		move.b	#0,$1A(a0)
 		move.b	#0,$1C(a0)
-		cmpi.b	#$10,($FFFFF600).w
+		cmpi.b	#$10,(v_gamemode).w
 		bne.s	loc_1BB04
 		moveq	#6,d0
 		bra.s	loc_1BB0A
@@ -35619,7 +35619,7 @@ loc_1BB24:				; CODE XREF: ROM:0001BB1Cj
 
 Debug_Move:				; DATA XREF: ROM:0001BABCo
 		moveq	#6,d0
-		cmpi.b	#$10,($FFFFF600).w
+		cmpi.b	#$10,(v_gamemode).w
 		beq.s	loc_1BB44
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
@@ -35638,10 +35638,10 @@ loc_1BB44:				; CODE XREF: ROM:0001BB3Cj
 Debug_Control:				; CODE XREF: ROM:0001BB52p
 		moveq	#0,d4
 		move.w	#1,d1
-		move.b	($FFFFF605).w,d4
+		move.b	(v_jpadpress1).w,d4
 		andi.w	#$F,d4
 		bne.s	loc_1BB9E
-		move.b	($FFFFF604).w,d0
+		move.b	(v_jpadhold1).w,d0
 		andi.w	#$F,d0
 		bne.s	loc_1BB86
 		move.b	#$C,($FFFFFE0A).w
@@ -35659,7 +35659,7 @@ loc_1BB86:				; CODE XREF: Debug_Control+18j
 
 loc_1BB9E:				; CODE XREF: Debug_Control+Ej
 					; Debug_Control+3Aj
-		move.b	($FFFFF604).w,d4
+		move.b	(v_jpadhold1).w,d4
 
 loc_1BBA2:				; CODE XREF: Debug_Control+2Ej
 		moveq	#0,d1
@@ -35703,9 +35703,9 @@ loc_1BBEC:				; CODE XREF: Debug_Control+8Cj
 		move.l	d3,8(a0)
 
 loc_1BBF4:				; CODE XREF: Debug_Control+26j
-		btst	#6,($FFFFF604).w
+		btst	#6,(v_jpadhold1).w
 		beq.s	loc_1BC2C
-		btst	#5,($FFFFF605).w
+		btst	#5,(v_jpadpress1).w
 		beq.s	loc_1BC10
 		subq.b	#1,($FFFFFE06).w
 		bcc.s	loc_1BC28
@@ -35714,7 +35714,7 @@ loc_1BBF4:				; CODE XREF: Debug_Control+26j
 ; ---------------------------------------------------------------------------
 
 loc_1BC10:				; CODE XREF: Debug_Control+A6j
-		btst	#6,($FFFFF605).w
+		btst	#6,(v_jpadpress1).w
 		beq.s	loc_1BC2C
 		addq.b	#1,($FFFFFE06).w
 		cmp.b	($FFFFFE06).w,d6
@@ -35728,7 +35728,7 @@ loc_1BC28:				; CODE XREF: Debug_Control+ACj
 
 loc_1BC2C:				; CODE XREF: Debug_Control+9Ej
 					; Debug_Control+BAj
-		btst	#5,($FFFFF605).w
+		btst	#5,(v_jpadpress1).w
 		beq.s	loc_1BC70
 		jsr	(SingleObjectLoad).l
 		bne.s	loc_1BC70
@@ -35747,7 +35747,7 @@ loc_1BC2C:				; CODE XREF: Debug_Control+9Ej
 
 loc_1BC70:				; CODE XREF: Debug_Control+D6j
 					; Debug_Control+DEj
-		btst	#4,($FFFFF605).w
+		btst	#4,(v_jpadpress1).w
 		beq.s	locret_1BCCA
 		moveq	#0,d0
 		move.w	d0,($FFFFFE08).w
@@ -35763,7 +35763,7 @@ loc_1BC98:				; CODE XREF: Debug_Control+134j
 		move.w	d0,$E(a0)
 		move.w	($FFFFFEF0).w,($FFFFEECC).w
 		move.w	($FFFFFEF2).w,($FFFFEEC6).w
-		cmpi.b	#$10,($FFFFF600).w
+		cmpi.b	#$10,(v_gamemode).w
 		bne.s	locret_1BCCA
 		move.b	#2,(v_objspace+$1C).w
 		bset	#2,(v_objspace+$22).w
@@ -35844,35 +35844,16 @@ S1SS_5:		incbin "sslayout\5.bin"
                 even
 S1SS_6:		incbin "sslayout\6.bin"
                 even
-Art_EHZFlower1:	dc.l	     0,	       0,	 0,	   0,	     0,	     $98, $8880087,  $998088; 0
-					; DATA XREF: ROM:0001AB2Et
-		dc.l	 $9899,	$9887777,  $988777,   $98887,	 $9988,	    $998,      $99,	   9; 8
-		dc.l	 $9980,	   $9800,   $98098,   $98087,	$98088,	   $9899,  $998777,   $98777; 16
-		dc.l	$98887,	   $9888,    $9888,	$988,	  $998,	     $99,      $99,	   9; 24
-Art_EHZFlower2:	dc.l	 $DD00,	  $DCD50,   $5DD50,    $5500,	     0,	     $55,     $55D,	$5DC; 0
-					; DATA XREF: ROM:0001AB42t
-		dc.l	  $5DC,	    $5DD,     $5DD,	$5DD,	  $5DD,	    $55D,     $555,	 $55; 8
-		dc.l	     0,	       0,	 0,	   0,	$DD000,	 $DCD500,  $5DD500,   $55000; 16
-		dc.l	   $55,	    $5DD,    $5DDC,    $5DDC,	 $5DDD,	   $55DD,     $555,	 $55; 24
-Art_EHZFlower3:	dc.l	    $C,	     $CC,     $CCD,	$DCD,	   $D5,	 $CD0005, $CCCD098,$CCDD5587; 0
-					; DATA XREF: ROM:0001AB5At
-		dc.l $CCDD5587,	$CCCD098,  $CD0005,	 $D5,	  $DCD,	    $CCD,      $CC,	  $C; 8
-		dc.l	     0,	       0,  $CCCCD0,  $CCDCD0,  $CDDDD0,	 $CCD5D0,  $DDDD58,	 $87; 16
-		dc.l	   $87,	 $DDDD58,  $CCD5D0,  $CDDDD0,  $CCDCD0,	 $CCCCD0,	 0,	   0; 24
-Art_EHZFlower4:	dc.l	     0,	       0,	 0,   $88000,  $877800,	$9988780,   $98878,    $9877; 0
-					; DATA XREF: ROM:0001AB64t
-		dc.l   $999887,	$9899887, $8999988, $8900999, $9000099,	    $BEF,     $BBE,	 $BB; 8
-		dc.l	     0,	       0,	 0,	   0,  $880000,	$8877800,$99988788,   $99887; 16
-		dc.l	 $9877,	  $99877, $9889887,$98899998,$89900099,$90000BEF,     $BBE,	 $BB; 24
-Art_EHZFlower5:	dc.l $11333111,$11333111,$33111333,$33111333,$33111434,$11334311,$11333111,$1133411B; 0
-					; DATA XREF: ROM:0001AB7Ct
-		dc.l $1133411B,$11333111,$11334311,$33111434,$33111333,$33111333,$11333111,$11333111; 8
-		dc.l $11333111,$11333111,$33111333,$33111344,$33111434,$11334311,$11343111,$1134411C; 16
-		dc.l $1134411C,$11343111,$11334311,$33111434,$33111344,$33111333,$11333111,$11333111; 24
-		dc.l $11333111,$11333111,$33111333,$33111344,$33111445,$11334311,$11344111,$1134511E; 32
-		dc.l $1134511E,$11344111,$11334311,$33111445,$33111344,$33111333,$11333111,$11333111; 40
-		dc.l $11333111,$11333111,$33111333,$33111344,$33111456,$11334533,$11345331,$1134631F; 48
-		dc.l $1134631F,$11345331,$11334533,$33111456,$33111344,$33111333,$11333111,$11333111; 56
+Art_EHZFlower1:	incbin "artunc\EHZ Flowers - 1.bin"
+                even
+Art_EHZFlower2:	incbin "artunc\EHZ Flowers - 2.bin"
+                even
+Art_EHZFlower3:	incbin "artunc\EHZ Flowers - 3.bin"
+                even
+Art_EHZFlower4:	incbin "artunc\EHZ Flowers - 4.bin"
+                even
+Art_EHZPulsingBall:incbin "artunc\EHZ Pulsing Ball.bin"
+                even
 Art_HPZUnusedBg:incbin "artunc\Unused - HPZ Background.bin"
                 even
 Art_HPZGlowingBall:incbin "artunc\HPZ - Orb.bin"
@@ -36304,217 +36285,77 @@ Nem_EHZ_Bridge:	incbin "artnem\EHZ Bridge.bin"
                 even
 Nem_HTZ_Lift:	incbin "artnem\HTZ Lift.bin"
                 even
-Nem_HTZ_AutomaticDoor:dc.b $80,	 4,$80,	 4,  8,$15,$1C,$33,  1,$44, $A,$54, $D,$76,$3E,$81,  3,	 0,$14,	 9,$83,	 4,  7,$85,  5,$17,$86,	 5,$18,$87,  5,$19,$89,	 4,  6,$8A,$15,$1D,$8B,	 5,$16,$8C,  3,	 2,$8F,	 5,$1E,$FF,$FC,$47,$F5,$FF,$10,$3D,$FB,$1F,  8,$FC,$17,$E8,$63,$F0,$55,$35; 0
-					; DATA XREF: ROM:0001C22Ao
-		dc.b $35,$30,  8,$89,$A9,$A9,$80,$44, $D,$1A,$38,$34,$68,$DF,$7E,$BB,$F4, $E,$5F,$9F,$93,$1F,$8E, $E,$39,$7C,$3D,$8A,$EA,$2C,$9B,$3F,$1B,$E1,$EC,$57,$51,$64,$D9,$F8,$DF, $F,$62,$BA,$8B,$26,$CF,$C6,$F8,$7B,$15,$D4,$59,$36,$78,  0; 64
-Nem_HTZ_Seesaw:	dc.b $80,$18,$80,  4,  6,$15,$19,$26,$3A,$34,  8,$45,$17,$55,$1A,$66,$3B,$74,  2,$81,  3,  0,$14, $A,$26,$38,$36,$39,$48,$F9,$78,$FA,$82,  4,  5,$78,$FB,$83,  5,$1B,$15,$16,$84,  4,  7,$15,$13,$77,$7B,$85,  4,  4,$86,  5,$18,$87,  4,  3,$16,$3C,$8A,  5,$12,$8B; 0
-					; DATA XREF: ROM:0001C168o
-					; ROM:0001C236o
-		dc.b   7,$7A,$8F,  8,$F8,$FF,$22,$22,$67,$4C,$5C,$6C,$43,$B0,$D6,$F4,$3A,$FD,$BE,$7F,$A2,$4D,$FE,$3F,$7F,$67,$FE,$67,$FF, $B,$7F,$90,$88,$88,$88,$BF,$EF,$F4,$5F,$F3,$F7,$F7,$FF,$6F,$AF,$64,$44,$44,$45,$FF,$7F,$A2,$FF,$9F,$BF,$BF,$FB,$7D,$7B,$2E,$DF,$4E,$34,$16; 64
-		dc.b $EF,$B1,$73,$B4,$6D,$9C,$5C,$D5,$20,$C1,$A5,$F8,$89,$D6,$A6,$44,$59,$FC,$B5,$F0,$2E,$95,$B8,$DB,$6C,$47,$17,$AD,$AB,$C7,$1B,$C6,$6C,$DC,$1E,$1C,$59,$B8,$54,$71,$66,  6,$8A,$8E,$2D,$46,$8A,$8F,$F2,$68,$A9,$3E,$4D,$33,$3E,$62,$74,$78,$89,$D1,$E2,$FC,$1E,$33; 128
-		dc.b $66,$E0,$F0,$E2,$CD,$C2,$A3,$8B,$30,$34,$54,$71,$6A,$34,$54,$7F,$93,$45,$49,$F2,$69,$99,$F3,$13,$AD,$4C,$88,$88,$88,$8F,$1A,$A3,$C5,$F8,$3C,$66,$CD,$C1,$E1,$C5,$9B,$85,$47,$16,$60,$68,$A8,$E2,$D4,$68,$A8,$FF,$26,$8A,$93,$E4,$D3,$33,$E6,$27,$47,$88,$9D,$1E; 192
-		dc.b $2F,$C1,$E3,$36,$6E, $F, $E,$2C,$DC,$2A,$38,$B3,  3,$45,$47,$16,$A3,$45,$47,$F9,$34,$54,$9F,$26,$99,$9F,$31,$3A,$D4,$C8,$88,$8A,$FE,$43,$E1,$83,$1E,$1E,$BA,$A5,$DB, $D,$E4,$30,$C8,$6B,$35,$6F,$2E,$2C,$C1,$D9,$51,$C6,$FA,$34,$54,$9E,$68,$D4,$75,$47,$B8,$9E; 256
-		dc.b $C8,$B5,$F9,$AF,$CC,$7E,$6B,$A5,$FC,$FA,$C7,$C5,$7C,$11,$11,$11,$11,$11,$14,$7C,$67,$E2,$F5,$12,$FC,$47,$8A,$3D,$75,$2F,$42,$24,$2F,$21,$A1,$A9,$5F,$C1,  6,$CB,$A5,  5,$A5,$A8,$36,$59,$5F,$C6,$1D,$C8,$77,$21,$DC,$BD, $C,$FE,$6E,$59,$97,$E6,$F2,$3D,$4B,$B1; 320
-		dc.b $2E,$C4,$BB, $D,$E5,$E4,$AC,$71,$4A,$5A, $B,$A5,$63,$81,$E5,$E5,$A1,$A1,$2B,$89,$40,$F5,$2E,$80; 384
-Nem_HPZ_Bridge:	dc.b $80,$15,$80,  3,  1,$14,  8,$26,$33,$36,$36,$46,$39,$56,$3A,$66,$3B,$73,  2,$81,  3,  0,$15,$1A,$82,  4, $A,$83,  3,  3,$14, $B,$84,  5,$18,$85,  6,$38,$86,  6,$32,$18,$FA,$87,  4,  9,$88,  7,$7A,$89,  7,$79,$8A,  6,$37,$8C,  8,$F8,$8E,  7,$78,$8F,  7,$7B; 0
-					; DATA XREF: ROM:0001C1AEo
-		dc.b $FF,$D9,$FE,$8A,  3,  6,$C8,$A0,$CB,$CF,$2C,$32,$C8,$A1,$8B,$8A,$39,$35,$C8,$7C,$85,$DB,$5D,$8B,$E8,$5F,$42,$90,$CF,$F4,$31,$FA,$1C,$C2,$A1,$D5,$8E,$AC,$2E,$DA,$EC,$72,$C2,$E5,$E4,$6A,$2F,  2,$81,$65,$E3,$2C,$D9,$62,$81,$B2,$18,$8F,$D1,$3F,$D8,$C6,$A2,$C8; 64
-		dc.b $BF,$CA,$40,$38,$E3,$EB,$46,$86,$36,$A3,$8D,$A4,$E5,$B4,$C4,$E7,$24,$40,$E6,$B6,$92,$33,$11,$30,$E0,$44,$82,$E0,$72,$E3,$44,$45,$ED,$A8,$BF,$F8,$DC,$6B,$6B,$80,$75, $F,$91, $C,$89,$81, $E,$26,  6,$60,$CE,$D5,$C8,$80,$67,$39,$89,$DB,$23,$3B,$60,$D6,$D8,$14; 128
-		dc.b $75,$F5,$C6,  8,$8F,$CA,$58,$37,$1A,$8F,$D0,$91,$FA,$22,$2B,$89,$19,  2,$E5,$F1,$26,$46,$54,$E4,$E8,$EA,  4,$31,$44,$1B,$CC,$17,  3,$A0,$87,$41,$C9,  5,$E6,$24,$83,$60,$89,$3A,$87,$13,  0,$87,$43,$F4,$F0, $B,$A0,$5D,  8,$14,$C8,$A6,$44,$7E,$9C,$53,  4,$44; 192
-		dc.b $C3,$8D,$19,  4,$59,  6,$46,$6C,$83,$2C,$74,$10,$E8,$43,$23,$3B,$20,$D0,$70,$23,$47,$46,$5D,$64,$24,$CF, $E,$59,$19,  9,$E2,$81,$F5,$F1,$C7,$BF,$DD,$E1,$9B,$FD,$2C,$A4,$97,$7E,$37,$3B,$E3,$F4,$7C,$3A,$3B,$FA,$F3,$ED,$24,$92,$49,$24,$92,$5E,$B7,$AF,$3F,$8D; 256
-		dc.b $F1,$EF,$CE,$19,$BF,$D2,$CA,$49,$77,$E3,$73,$BE,$3F,$47,$97,$18,$7E,$7C,$7B,$F8,$49,$24,$92,$49,$24,$97,$E2,$FE,$31,$BF,$8F,$5E,$77,$C3,$37,$FA,$59,$49,$2E,$FC,$6E,$77,$C7,$E8,$FE,$BF,$2B,$F9,$FF,$CE,$24,$92,$49,$24,$92,$48; 320
-Nem_HPZ_Waterfall:dc.b $80,$35,$80,  3,	 0,$15,$19,$23,	 1,$35,$17,$45,$1A,$56,$3B,$67,$78,$74,	 4,$81,	 4,  6,$34,  9,$48,$F8,$82,  6,$38,$83,	 4,  5,$17,$7A,$85,  4,	 8,$86,	 6,$39,$87,  4,	 7,$89,	 5,$16,$17,$7B,$8A,  5,$1B,$8B,	 5,$18,$8C,  4,	$A,$8D,	 6,$3A,$8E,  7,$79,$FF;	0
-					; DATA XREF: ROM:0001C1B4o
-		dc.b $14,$30,$30,$30,$5C,$BA,$69,$CC,$20,$83,  9,$A8,$42,$A8,$81,$4A,$86,$2A,$85,$C3,$16,$4D,$36,$9C,$BA,$69,$CC,$20,$83,  9,$A8,$42,$A8,$81,$4A,$86,$2A,$85,$C3,$16,$40,$E8,$5B,$4E,$5D,  3,$A1,$7D,$41,$84,$10,$86,$34,$A8,$55,  2,$A1,$50,$C5,$B4,$C8,$5B,$4E,$5D; 64
-		dc.b   3,$A1,$7D,$41,$84,$10,$86,$34,$A8,$55,  2,$A1,$50,$C5,$B5,$C9,$E5,  3,$97,$41,  6,$10,$42,$21,$8D,$29,$54,$40,$A5,$74,$C5,$B4,$C5,$83,$97,$44,$D3,$97,$41,  6,$10,$42,$21,$8D,$29,$54,$40,$A5,$74,$C5,$B4,$C5,$83,$97,$40,$ED,$4D,$8B,$CD,$E6,$F3,$79,$11,$99; 128
-		dc.b $31,$37,$9B,$C8,$5C,$CD,$E6,$F2,$18,$2C,$9F,$80,$F9,$9B,$C9,$79,$BC,$DE,$6F,$37,$91,$19,$93,$13,$79,$BC,$85,$CC,$DE,$6F,$21,$82,$C9,$F8, $F,$99,$BC,$88,$14,$18,$72,$14,$79,$16,$1E,$47,$5A,$F2,$3A, $A,$3C,$8E,$83, $E,$87,$43,$A3,$D1,$E8,$38,$62,$C8,$28,$60; 192
-		dc.b $6C,$60,$5B,$C7,$9F,$1E,$46,$FC,$75,$A5,$1D, $B,$78,$F3,$A6,$1D,  7,$1B,$18,$1B,$1E,$7C,$79,$D6,$FC,$74,$3A,$3B,$14,$3A,$3D,$1A,$18,$14,$28,$D1,$C1,$F2,$38,$14,$D8,$1E,$4F,$E4,$75,$FA,$1C,$F4,$3C,$C8,$61,$D4,$9E,$A4,$38,$A9,$BC,$8A,$18, $C,$19,$11, $D,$85; 256
-		dc.b $6A,$C2,$85,$B3,$46,$C6,$87,$E6,$BD,$1A,$CB,$6B,$F2,$2F,$CE,$68,$7E,$5F,$9B,$BF,$E5,$57,$91,$68,$E0,$7A,$6C,$C7, $B,$F9,$17,$1C,$73,$97,$E3,$2E,$AE,$B0,$AE,$2A,$D5,$EF,$78,$AB,$FE,$F3,$3F,$9C,$1F,$95,$1B,$B7,$E5,$79,$F5,$65,$CA,$EB,$D5,$FD,$65,$87,$E8,$47; 320
-		dc.b $E4,$43,$7E,$9D,$BF,$6E,$3F,$10,$1F,$F2,$C2,$3F,$11,$C4,$72,$3F,$2D,$D7,$10,$AD,$C8,$C7,$10,$39,$78,$E4,$B5, $B,$30,$83,$CE,$1B,$F1,$1C,  6, $D,$80,$AD,$F9,$21,$81,$F9,$A1,$F9,$14,$EE,$DE,$2D,$AC,$5E,$B3,$8B,$D5,$EB,  6,$B1,$BA,$C1,$AC,$36,$FB,$C0,$B5,$7E; 384
-		dc.b $6C,$A8,$AC, $F,$CD, $B,$1C,$7A,$CD,$8D,$87,$BA,$18,$CD,$B3,  3,  7,$F5,$29,$DF,$E7,$33,$F9,$C1,$8F,$CE,$66,$A3,  3,$D9,$B7,$E6,$FD,$9F,$CE,$66,$8F,$E7,$3F,$37,$5A,$FC,$DA,$22,$22,$77,$6C,$EE,$F6,$CB,$6F,$BE,  7,$BB,$DB,$9B, $B,$56,$33,$58,$B4,$38,$D9,$DD; 448
-		dc.b   6,$E7,$3C,$67,$81,$18,$DD,$96,$AC,$A3, $B,$BB,$3E,$ED,$9B,$2D,$B0,$C2,$C2,$AC,$77,$9A,$16,$1C,$73,$FA,$BB,$56,$16,$3F,$45,$6A,$C3,$28,$FE,$4F,$19,$AC,$70,$3D,$A8,$AC,  5,$DD,$AF,$8F,$5F,$A9,$3E,$D1,$11, $D,$78,$7C,$77,$86,$DF,$7B,$16,$18,$35,$B1,$66,$C1; 512
-		dc.b $C5,$B3,$F9,$B3,$BB,$2E,$77,$5C, $B, $A, $A,$2D,$CF, $B,$9F,$62,$B8,$6E,$5E,$F1,$C0,$8A,$E3,  2,$2C,$A3,$9E,  6,$D6,$D1,$C3,$2F,$1E,$84,$7E,$4B,$9D,$41,$8F,$C9,$43,$88,$BF,$2C,$63,$81,$EA,$C3,$D8,$E1,$73,$F8,$80,$D9,$51,$2A,$66,$F2,$14,$2F,$C0,$51,$37,$97; 576
-		dc.b $61,$F1,$79,$CB,  9, $E,$1E,$6F,$39,$71,$30,$64,$40,$89,$BC,$E6,  4,$DE,$54,$CD,$E4,$28,$5F,$80,$A2,$6F,$2E,$C3,$E2,$F3,$96,$12,$1C,$3C,$DE,$72,$E2,$60,$C8,$81,$13,$79,$CC, $F,$C4,$5B,$AB,$77,$1D,$AA,  5, $A,$8A,$14,$AE,$57,$2A,$C1,$8B,$5D,$83,$16,$D3,$5D; 640
-		dc.b $83,$87, $F,$DB,$87, $F,$DB,$E5,$FB,$81,  2,$13,$F4,$A6,$35,$1D,$AA,  5, $A,$8A,$14,$AE,$57,$2A,$C1,$8B,$5D,$83,$16,$D3,$5D,$83,$87, $F,$DB,$87, $F,$DB,$E5,$FB,$81,  2,$13,$F2,$BC,$DA,$AD,$5F,$A9,$DA,$78,$AF,$14,$89,$BF,$1B,$4E,$ED,$E2,$C8,$88,$31,$E3,  8; 704
-		dc.b $88,$88,$88,$88,$9A,$B7,$8B,$22,$20,$C7,$8C,$27,$74,$30,$30,$30,$5C,$BA,$69,$CC,$20,$83,  9,$A8,$42,$A8,$81,$4A,$86,$2A,$85,$C3,$16,$40,$E8,$5B,$4E,$5D,  3,$A1,$7D,$41,$84,$10,$86,$34,$A8,$55,  2,$A1,$50,$C5,$B5,$C9,$E5,  3,$97,$41,  6,$10,$42,$21,$8D,$29; 768
-		dc.b $54,$40,$A5,$74,$C5,$B4,$C5,$83,$97,$40,$ED,$4D,$8B,$CD,$E6,$F3,$79,$11,$99,$31,$37,$9B,$C8,$5C,$CD,$E6,$F2,$18,$2C,$9F,$80,$F9,$9B,$C8; 832
-Nem_HPZ_Emerald:dc.b $80,$20,$80,  3,  2,$13,  3,$24, $A,$35,$18,$45,$17,$55,$19,$66,$3A,$75,$1B,$81,  3,  0,$16,$38,$82,  4,  8,$17,$78,$83,  3,  1,$16,$39,$84,  7,$77,$85,  5,$1A,$18,$F7,$86,  5,$16,$18,$F6,$87,  4,  9,$17,$79,$8C,  7,$76,$8E,  7,$7A,$FF,$E8,$64,$4D,$C4,$9C; 0
-					; DATA XREF: ROM:0001C1CCo
-		dc.b   9,$38,$12,$70,$35,  6,$86,$9E,$B9,$11,$E5,$4F,$2B,$F4,$5E,$FE,$45,$CB,$17,$2C,$6C,$6C,$6C,$6C,$6C,$55,$B3,$63,$18,$B1,$70,$EC,$71, $B,$5D,$1B,$60,$87,$64, $D,$15,$69,$B8,$53,$18,$81,$D4, $D,$A8,$BC, $E,$88,$8B,$82,$3D,$FD,$BC,$DB,$4F,$87,$C2,$FD,$12,  8; 64
-		dc.b $20,$E0,$38,$2C,$10,$83, $F,$BA,$28,$39,$5D,$D8,$F1,$AF,$CA,$5B,$CF,$E9,$7F,$29,$C2,$15,$6D,$9E,$10,$C1,$A1,$8E,$28,$33,$53,$8E,$32,$5C,$D8,$54, $A,$1B, $E,$2E,$36,$E3,$B3,$D2, $C,$2D,$28,$7F,$8F,$5A,$A1,$F8,$F1,$72,$1D,$AB,$F1,$B5,$1E,$C4,$6C,$54,$7E,$71; 128
-		dc.b $87,$EA,$E3,$D2,$17,$FC,$C7,$E2,$7F,$15,$FA,$9F,$C4,$57,  8,$16,$17,$1C,$A0,$B8,$E5,  5,$C7,$35,$C7,$35,$C7,$37,  7,$F4,$2C,$41,$8E,$7F,$44,$58,$C4,$16,$36,$2A, $D,$E6,$E2,$CE, $D,$E5,$41,$DB, $E,$54,$14,$3D,$63,$9E,$D1,$E9,$4A,  8,$23,$EA,$8D,$1F,$52,$86; 192
-		dc.b  $F,$AE,$8F,$E2,$7A,$3F,$89,$DF,$47,$A3,$93,$93,$93,$41,$9C,$7E,$27,$F1,$1F,$89,$FD,$57,$E6,$E3,$F8,$2B,$F4,$75,$CD,$1E,$84,$50,$2E,$74,$43,$12,$FB,$C0,$31,$FA,$69,$31,$EF,$FC,$61,$B9,$BD,$8A,$9C,$1A,$9D,$CA,$B1,$43,  7,$33,$80,$C1,$C0,$47,$22,$85,$73,$46; 256
-		dc.b $E1,$15,$CE,  7,$2C,$54,$30,$FC,$A1,$71,$28,$39,$62,$6E,$50,$9B,$94,$25,$85,$D8,$A1,$38,$ED,$C8,$BF,$64,$1C,$FE,$6F,$F1,$1D,$ED,$3A,$E6,$38,$B4,$77,$42,$AD,$A4,$1C,$8B,$57,$9F,$6A,$95,$ED,$41,$7B,$50,$5A,$5F,$B6,$F3,$AF,$DB,$7E,$9F,$A1,$6A,$1B,$5C,$2B,$21; 320
-		dc.b $B5,$C5,$C6,  5,$98,$63,$6A,$D3,$79,$B9,$DC,$B9,$B3,$3D, $C,$4F,$B0,$62,$AC,$C3,$16,$47,$25,  7,$C6,$CE,$38,$47,$F3,$D4,$3F,$3B,$8F,$CE,$63,$F3,$B9,$FC,$57,$E6,$FF,$15,$F9,$BF,$CE,$59,$4D,$A6,$DC,$2F,$28,$32,$85,$A5,$94,$1F,$B1,$B9,$F7,$C1,$7E,$EA,$6D,$FA; 384
-		dc.b $58,$98,$FD,$B6,$A0,$20,$CB,$B6,$4E, $B,$B6,$AE,$70,$5D,$B5,$78,$B5,$17,$26,$F1,$6C,$C9,$BF,$BD,$E2,$DD,$1C,$C6,$F2,$3A,$39,$FC,$F6,$3F,$3C,$83,$FC,$F3, $B,$F3,$D4,$32,$32,$32,$32,$33,$DB,$F1,$BF,$AC,$FC,$6F,$E7,$3C,$72,$11,$C4,$28,$BC,$C3,$2E,$35,$78,$CC; 448
-		dc.b $28,$CC,$F8,$D7,$83,$1A,$F1,$AF,  3,$30,$37,$78,  7,  5,$1C,$1E,$3A,$38,$22,$2E,$22,$E4,$60,$10,$68,$31,$41,$82,$C5,  6,$30,$6B,$C5,$E1,$11,$45,$16,$3B,$2E,$5E,$9F,$6A,$EF,$8E,$CB,$B8,$D6,$3B,$77,$EB,$B6,$91,$BF,$6D,$F6,$5D,$BF,$BB,  8,$6C,$5C,$B8,$D8,$AF; 512
-		dc.b $D1,$B1,$72,$C2,$2C,$D0,$7C,$DC,$DC,$1B,$8C,$8C,$8C,$8C,$8C,$8C,$8D,$D5,$B3,$A5,$18,$D6,$74,$8E,$84,$28,$DD,$B6,$B4,$CD,$59,$78,$18,$19,  5, $E,$AC,$F8,$2A,$48,$65,$49,$44,$42,$EE,$68,$C6,$25,$80,  0; 576
-Nem_HPZ_Platform:dc.b $80,$10,$80,  4,	9,$15,$19,$37,$7C,$72,	0,$83,	5,$18,$16,$3B,$84,  2,	1,$26,$3D,$85,	5,$1A,$87,  4,	8,$16,$3C,$36,$38,$89,	4, $B,$8A,  4, $A,$16,$37,$77,$7D,$8B,	6,$39,$8D,  6,$3A,$8E,	6,$36,$FF,$AD,$A3,$6A,$FD,$5B,$89,$EF,$F4,$B0,	1,$FE, $D,$AA; 0
-					; DATA XREF: ROM:0001C1BAo
-		dc.b $69,$FD,$1F,$15,$34,  0,  4,$FE,$3F,$9F,$CF,$FE,$23,$F0,$5C,$FE, $B,$FA,$B1,$A0,  3,$FA,$7A,$C3,$5F,$B4,$C3,$F1,$CA,  0,$1F,$81,$E7,$F2,$3A,$FC,$8E,$B8,$C7,$98,  0,$3F,$EB,$FB,$38,$EE,$3F,$40,$80,  7,$CF,$D0,$EB,$F6,$3C,$63,$CC,  0,$1F,$F5,$FD,$9C,$77, $E; 64
-		dc.b $59,$F4,  0,$2F,$F3,$B7,$53,$B0,  0,  0,$1F,$D0,$65,$3F,$81,$BF,$F0,$22,$77,$B8,$BE,$AF,$7B,  0,  0,  1,$97,$E4,$4D,$65,$CA,$7D,$DE,$EB,$F7,$20,  0,  0,$66,$27,$8C,$B3,$FB,$43,$EF,$5F,$99,$EA,$FF,$5A,  0,  0,  3,$E3,$1E,$C7,$E5,$21,$FD,$3B,$96,$7D,$FA,  0; 128
-Nem_HPZ_PulsingBall:dc.b $80,$22,$80,  3,  2,$14,  6,$25,$12,$34, $A,$45,$18,$55,$1A,$66,$3C,$74,  7,$81,  3,  0,$15,$17,$36,$3B,$82,  4,  8,$83,  3,  1,$15,$19,$27,$7A,$84,  6,$3A,$18,$F8,$85,  5,$16,$15,$1C,$86,  5,$1B,$87,  5,$13,$17,$7B,$FF,$7D,  3,$40,$C0,$90,$8B,$ED,$84,$34; 0
-					; DATA XREF: ROM:0001C1C0o
-		dc.b $ED,$5B,$EA,$65,  8,$11,$D2,$32,$D9,$45,  8,$43,$66,$BD,$EA,$7E,  4,$5E,$83,$A3,$83,$A0,$EC,$70, $B,$E7,  1,$67,  1,$1D,$5D,$FB,$8F,$E0,$E5,$1D,$66,$B7,$EA,$B6,$51,$C6,$70,$5D,$DD,$DD,$DD,$DD,$DD,$F4,$71,$9C,$14,$77,$5E,$B7,$59,$D1,$59,$FE, $C,$76,$F7,$D1; 64
-		dc.b $43,$19,$43,$19,$72,$30,$5D,$86,$8E, $B,$A0,$F4,$50,$F2,$7A,$F7,$47,$61,$40,$45,$1D,$C8,$AE,$A0,$40,$46,$7D,$6E,$AD,$36,$80,$DB,$BC,  9,  8,$22,$88,$77,$A0,$68,$18,$12,$11,$79,$B0,$86,$F8,$AE,$74,$50,$8B,$DB,$13,$89,  8,$46,$6C,$1B,$7D,$6B,$72,$12, $F,$A0; 128
-		dc.b $E8,$B0,$62,$C6,$43,$42,$45,$19,  3,$23,$59,$62,$C1,$67,  1,$1D,$5D,$FB,$8F,$E0,$E5,$1D,$66,$A7,$EA,$A6,$5B,$D3,$96,$ED,$AF,$57,$6F,$DB,$CA,$75,$35,$36,$BB,$4D,$83,  7,$A0,$C1,$A6,$D7,$69,$A9,$D4,$E5,$FB,$76,$BD,$5D,$BB,$62,$FE,$98,$CE,$BD,$4E,$B3,$A2,$B3; 192
-		dc.b $FC,$18,$ED,$EF,$A2,$86,$32,$83,$16,$CD,$19,$11,$22,$8C,$86,$84,$8B,$16, $C,$5D,  7,$D0,$90,$96,$F5,$D6,$D8,$34,$CA,$81,$28,$9E,$2D,$78,  8,$F5,$CA,$F8,$68, $D,$3B,$C0,$90,$82,$28,$87,$77,$77,$C5,$B5,$CC,$73,$1C,$42,$5C,$42,$DE,  6,$E2,$16,$1A,$11,$42,$C8; 256
-		dc.b $2E,$4B,$3A,$3E,  6,$B3, $F,$D2,$63,$F4,$AD,$FF,$5F,$D2,$CB,$8D,$72,$18,$1B,$42,$80,$7A,$9A,$9D,$ED,$31,$F9,$29,$FE,$58,$23,$68,$9B,$46,$67,$83,$5F,$A1,$95,$DA,$18,$36,$70,$68,$22,$C3,$41,$7C,$73,$F2,$DE,$FF,$4B,$8F,$EA,$E3,$F8,$BD,$B7,$32,$D7,$AF,$4B,$FA; 320
-		dc.b $28,$C2,$FD,$3A,$FD, $C,$4B,$DA,$EE,$53,$41,$AE,$D3,$59,$61,$83,$53, $C,$50,$90,$D7,$BF,$CB,$73,$E1,$DD,$ED,$E7,$3C,$E6,  2,$E6,  2,$E4,$A1,$E0,$2E,$30,$F0,$4D, $D,$43,$71,$4D,$D4,$F1,$FA,$40,$D6,$77,$7B,$6A,$C7,$16,$3B,$AB,$1D,$D5,$8E,$D0,$91,$DA,$10,$D6; 384
-		dc.b $F0,$ED,  8,$D1,$56,$56,$6B,$EC,$36,$E5,$9A,$28,$F8,$1A,$CD,$1B,$BC,$B9,$56,$DE,$7F,$6A,$7F,$4D,$2B,$6D,$AF,$F9,$26,$19,$8F,$D0,$98,$43,$F4,$F0,$DC,$C7,$5F,$92,$FD, $F,$C1,$BA,$CA,$21,$65,$AE,$8B,$5E,$11,$57,$60,$E5,  7,$C6,$7F,$8F,$EB,$92,$FD,$36,$79,$5F; 448
-		dc.b $96,$B2,$B7,$E4,$AE,$DC,$BC,$1B,$B7,$E9,$C4,$1E,$D7,$B1,$19,$57,$53,$41,$65,  5,$3A,$28,$29,$DD,$8A,$12,$BA,$2E,$85,  4,$5D,$7F,$1F,$F2,$D6,$77,$7E,$6A,$CA,$DA,$B2,$B5,  5,$6C,$10,$B9,$20,$F0,$17,$1A,$68,$EA,$68,$35,$A4,$1A,$D8,$2F,$40,  0; 512
-Nem_HPZ_Various:dc.b $80,$16,$80,  3,  1,$14,  8,$26,$38,$36,$3A,$45,$1B,$56,$3D,$66,$3B,$74,  9,$81,  3,  0,$14, $A,$82,  4, $B,$18,$F8,$83,  3,  2,$15,$1A,$84,  6,$3C,$85,  5,$18,$86,  5,$19,$18,$F9,$87,  3,  3,$16,$39,$38,$FA,$FF,$FC,$7F,$E2,$FF,$7F,$F8,$CF,$C7,$FF,$55,$E2; 0
-					; DATA XREF: ROM:0001C1C6o
-		dc.b $66,$66,$7F,$A7,$85,$81,$FB,$5B,$C7,$D2,$E5,$4C,$CC,$CF,$FD,$7F,$65,$9F,$8C,$A3,$A9,$99,$99,$EB, $F,$F2,$BF,$59,$7F,$3F,$4B,$95,$F5,$33,$33,$3F,$F5,$C5,$8C,$56,  6,$1F,$F5,$66,$66,$65,$63,$FA,$77,$8B,$4F,$F1,$DA,$FD,$2E,$8A,$F3,$B7,$33,$33,$FA,$3F,$3F,$14; 64
-		dc.b $7F,$15,$F8,$EF,$DE,$7E,$DB,$8D,$7E,$88,$42,$22,$78,$10,$88,$9E,  4,$22,$27,$81, $A,$76,$21,$4E,$C4,$C8,$93,$6B,$F4,$54,$B9,$F9,$17,$80,$68,$BC,$F4, $D,$38,  6,$99,$A3,$4C,$88,$A6,$44,$53,$22,$11,$64,$11,$1E,$30,$6B,$8C,$66,$8A,$E3,$10,$B7,$63,$BF,$8E,$EE; 128
-		dc.b $48,$C7,$F5,$9F,$FC,$72,$87,$40,$8B,$11,$50,$2C,$D4,$32,$10,$E9,$90,$8A,$2C,$B2,$15,$8E,$4B,$35,$1C,$96,$3C,$20,$F3,$96,$A0,$43,$5D,$3C,$AE,$BE,$56,$F2,$BD,$5B,$FC,$AF,$E9,$B9,$C1,$FD, $D,$A3,$50,$8E,$84,$23,$A1,  8,$E8,$16,$8E,$81,$71,$A0,$5C,$68,$17,  0; 192
-		dc.b $82,$CB,$8F,  3,$3C,$C2,$79,$E4,$88,$4E,  7,$4B,$2F,$D5,$F3,$EA,$CF,$6A,$3F,$A7,  3,$FC,$C0,$DF,$EC,$6C,$BB,$51,$A8,$76,$75,  0,$B0,$BA,  5,$82,  8,$20,$B1,$6A,$88,$2D,$45,$10,$FC,$28,$D6,$71,$C2,$8C,$6C,$5E,$FE,$3D,$BD,$8E,$C7,$7F,$A2,$D6,$C1,$50,$24,$82; 256
-		dc.b $A0,$49,  5,$40,$9E,$14,  9,$E1,$40,$9F,$44,$FA,$27,$D5,$FE,$21,$FE,$60,$6F,$F6,$36,$5D,$A8,$D4,$3B,$3A,$80,$58,$5D,  2,$C1,  4,$10,$58,$B5,$44,$16,$A2,$88,$7E,$14,$6B,$38,$E1,$46,$36,$2F,$7F,$1E,$DE,$C7,$7F,$1F,$A3,$85,$CF,$C8,$BC,  3,$45,$E7,$A0,$69,$C0; 320
-		dc.b $34,$CD,$1A,$64,$45,$32,$22,$99,$10,$8B,$20,$88,$F1,$83,$5C,$63,$34,$57,$18,$85,$BB,$1D,$FC,$77,$72,$40; 384
-Nem_UnusedDust:	dc.b   0,$18,$80,  5,$17,$14,  8,$25,$1B,$35,$19,$45,$1C,$56,$3A,$67,$7A,$72,  0,$83,  4,  6,$14, $A,$28,$F9,$38,$FA,$84,  3,  2,$14,  9,$25,$18,$37,$7B,$58,$F8,$85,  4,  7,$15,$16,$26,$3C,$35,$1A,$46,$3B,$58,$FB,$FF,$CF,$CE,$EB, $D,$7A,$9F,$29,$77,$4B,$B6,$9D; 0
-		dc.b $26,$5F,$77,$69,$D5,$26,$C3,$DE,$A7,$CA,$5A,$57,$69,$7C,$57,$C5,$7C,$5F,$F8,$73,$1F,$D3,$3F,$A7, $A,$BD,$B3,$CE,$A7,$C5,$A5,$FE,$5C,$7F,$D7,$FE,$B6,$5F,$E5,$4E,$B5,$8D,$7F,$D1,$3A,$79,$AC,$7F,$CE,$EC,  7,$A5,$EA,$7A,$B4,$E7,$C9,$BA,$BB,$E3,$3E,$7F,$11,$D3; 64
-		dc.b $E2,$25,$D6,$6C,$DC,$4C,$B8,$C0,  6,$EB,$2D,$8A,$85,$69,$6B,$AD,$4D,$D6,$93,$DD,$69,$3D,$D9,$77, $D,$36,$5B,$6F,$79,$FA,  0,  3,$33,$FC,$3F,$86,$F7,$DC,$FD,$AE,$D3,$AE,$D7,$DC,$F9,$86,$F8,$6B,$B6,$2B,$7F,$40,  4,$37,$A5,$F3,$9B,$2A,$DE,$93,$47,$78,$7F,$7F; 128
-		dc.b $33,$F5, $C,$9B,$94,  0,  0,$43,$AE,$6B,$6B,$B8,$5D,$C3,$2B,$26,$DC,$D6,$69,  2,$F4,$E0,  3,$F5,$68,$78,$56,$BA,$75,$76,$4F,  9,$A1,$90,$10,$9D,$42,$8B,$28,$50,$C9,$80, $D,$DB,$AF,$39,$65,$94,$F5, $A,$28,$2F,$2C,$9E,$EF,$D2,$B7,$2C,$9B,$32,  0,$1E,$AC,$B9; 192
-		dc.b $65,$CC,$43,$F5,$60,$37,$6E,$A4,$2E,$80, $B,$74,$9F,$2E,$43,$C3,$81,$D2,$7D,$BE,$D1,$74,  0,  6,$6D,$D4,$C2,$38,$83,$A4,  0,$70; 256
-Nem_CPZ_FloatingPlatform:dc.b	0,$10,$80,$73,	0,$81,	4,  5,$15,$12,$26,$2E,$36,$3A,$46,$3B,$74,  6,$82,  5,$14,$26,$34,$36,$33,$83,	4,  2,$16,$39,$25, $F,$35,$10,$84,  4,	3,$15,$16,$26,$32,$37,$78,$46,$35,$85,	4,  4,$15,$13,$86,  5, $E,$28,$FA,$87,	6,$36,$88,  5,$11,$16,$3D,$89; 0
-					; DATA XREF: ROM:0001C12Eo
-		dc.b $27,$79,$8A,$15,$18,$28,$FB,$8B,  7,$7C,$16,$2F,$8C,  5,$15,$8D,  6,$37,$8E,  6,$38,$FF,$7E,$BA,$15,$1F,$9C,$34,$2A,$3E,$F9,$5F,$2F,$92,$BF,$BB,$EE,$F8,$B7,$DD,$7E,$70,$D0,$A8,$FC,$E1,$A1,$53,$93,$CD,$F9,$95,$1F,$9C,$34,$2A,$3D,$BF,$21,$2C,$FF,$61,$D7,$F4; 64
-		dc.b $24,  0,  0,  0,  0,$19,$7F,$16,  6,$56,$79,$96,$50,$32,$B2,$DF,$D7,$E2,$AF,$EB,$1F,$3A,$FB,$EB,$F7,$50,$32,$B3,$CC,$B2,$81,$95,$9E,$65,$64,$81,$91,$C0,$CB,$28,$19,$59,$E6,$59,$37,$37,$68,$CC,$DF,$C0,$F3,$FE, $F,$C4,$80,  0,  0, $F,$DA,$FE,$DB,$C2,$1C,$F5; 128
-		dc.b $43,$4F,  8,$73,$FB,$EF,$1D,$E3,$BC,$77,$F7,$E1, $E,$7A,$A1,$A6,$55,$B9,$35,$43,$4C,$AB,$72,$6A,$86,$9E,$10,$E7,$AA,$1A,$31,$5A,$6C,$CD,$77,$F2,$63,$BC,$7C,$C6,$BC,$7B,$F8, $F,$DC,$FE,$A3,$F6,$1E,$78,$FF,  7,$E2,$40,  0, $F,$A9,$D9,$66,$E9,$1C,$A6,$EA,$A9; 192
-		dc.b $CA,$6E,$AB,$90,$97, $E,$54,$FD,$7E,$1C,$A7,$76,$1D,$53,$FD,$7E,$1D,$52,$6B,$B9,$5F,$D2,$AF,$2A,$85,$42,$49,$21,$3A,$8E,$24,$54,$FC,$B5,$3F,$2C,$8A,$7F,$C6,$32,$52,$FA,$25,$E5,$5E,$D2,$2B,$4F,$E9,$99,$A3,$C4,$77,$8E,$D1,$DA,$BF,$C8,$D9,$DB,$FB,$BF,$BB,$3B; 256
-		dc.b $88,$D6,$3C,$7B,$B7,$9F,$D4,$6F,$1F,$D0,$7F,$24,  0,  0; 320
-Nem_HPZ_WaterSurface:dc.b   0,$18,$80,	3,  4,$16,$38,$26,$3C,$37,$7A,$73,  5,$86,  5,$1A,$16,$3A,$87,	4, $C,$16,$3B,$88,  2,	1,$16,$39,$27,$7B,$38,$F8,$89,	2,  0,$15,$1B,$FF,$B6,$DB,$FE, $D,$79,$FF,$6F,$D3,$76,$EB,$F6,$FE,$F1,$EF,$9D,$A6,  9,$C8,$88,$EE,$10,$83,  8,$42,$6E,$10; 0
-					; DATA XREF: ROM:0001C1D2o
-		dc.b $B6,$D9,$D7,$AF,$DB,$4F,$EB,$67,$ED,$B3,$F8,$DD,$F5,$CF,$7A,$E7,$3F,$B1,$8E,$72,$23,$8E,$D1,$13,$92,  9,$37,  4,$4E,  8,$42,$1E,$88,$5B,$67,$7F,$D0,$C7,$3F,$81,$9E,$F3,$C7,$3E,$3B,$18,$CF,$70,$4F,$81,$13,$E0,$44,$77,  4,$83,  4,$49,$B8,$42,$1C,$1E,$10,$E0; 64
-		dc.b $F0,$B6,$DB,$6C,$73,$AF,$5F,$C8,$D6,$68,$FE,$47,$48,$8F,$68,$CF,$67,$22,$41,$DC,$21, $E,  8,$42,$1C,$10,$87,$A2,$DB,$6D,$BE,$75,$9A,$CD,$67,$59,$D3,$FB,$7F,$E4,$7E,$9C,$44,$F8,$11,$1D,$A4,$11,$84,$20,$EE,$10,$87,$A2,$DB,$6D,$FF,$B7,$5D,$EB,$35,$FB,$77,$F8; 128
-		dc.b $EF,$7F,$C8,$13,$91,$13,$91,$11,$DA,$24,$38,$12, $E,$E1,  8,$70,$5B,$6D,$FE,$86,$BF,$4F,$EB,$FE,$EE,$73,$8F,$62,$38,$E7,$22,$23,$B4,$44,$88,$88,$EE,$10,$48,$89,  9,$BE,$1E, $B,$6D,$B6,$CC,$FF,  7,$ED,$F5,$9A,$C3,$E3,$4E,$93, $E,$73,$46,$18,$23,  4,$83,$BF; 192
-		dc.b   8,$70,$41,$21,$E8,$85,$B6,$DB,$6C,$CF,$DB,$77,$D6,$3F,$A7,$F7,$A7,$39,$CD,$A2,$43,$21,$86,$13,$70,$F0,$E0,$84,$38,$3F,$80,$52,$DB,$6D,$99,$D6,$71,$D7,$E9,$F5,$9D,$38,$F7,$F0,$7B,$26,$D1,$11,$84,$21,$C1,  8,$43,$D1, $E, $F,$E0,$16,$DB,$6D,$9A,$CF,$E8,$7F; 256
-		dc.b $1D,$CF,$66,$39,$EC,$4C,$73,$68,$88,$C2,  9,$37,  4,$87,$F4,  8,$7A,$2D,$B6,$DB,$E6,$6B,$FA,$1C,$E6,$9D,$38,$67,$3A,$CE,$91,$C7,$1D,  9,$86, $C,$21,$83,$B8,$42,$1C,$1E,$10,$E0,$84,$2C,  0,  0; 320
-Nem_Button:	dc.b $80,$10,$80,  3,  2,$24, $A,$34, $C,$72,  0,$81,  4, $D,$13,  3,$26,$3C,$86,  6,$3B,$78,$FB,$87,  7,$7A,$27,$7C,$88,  7,$7B,$28,$FA,$89,$76,$3A,$8E,  6,$38,$16,$39,$8F,  4, $B,$13,  4,$FF,$FA,$F9,$DF,$AF,$38,$9B,$74,$D4,$A6,$A5,$35,$29,$A9,$4D,$4A,$D4,$F8; 0
-		dc.b $E8,  0, $F,$B6,$B7,$2D,$3C,$B4,$F2,$D3,$CB,$4F,$2D,$3C,$DE,$7F,$9F,$F8,$9F,$F4,$57,$BF,$CC,$FE,$58,$5F,$98,$D5,$6C,  3,$B9,$CE,$FF,$43,$53,$C6,$AF,$1A,$BC,$6A,$F1,$AB,$C6,$BF,$BF,$CE,$FF,$A3,$F1,$3F,$96,$FC,$CF,$B2,$9D,$AD,$FC,$C0,  2,$DF,$C8,$47,$EE,$F6; 64
-		dc.b $71,$E4,$4E,$A2,$75,$13,$A8,$9D,$44,$EB,$86,$B6,$BA,  0,  0,  0,  3,$EB,$E7,$7E,$BC,$E2,$6D,$D3,$52,$9A,$94,$D4,$A6,$A5,$35,$2B,$53,$E3,$A0,  0,$3E,$DA,$DC,$B4,$F2,$D3,$CB,$4F,$2D,$3C,$B4,$F3,$79,$FE,$7F,$40,  0,$7D,$E6,$A7,$8D,$5E,$35,$78,$D5,$E3,$57,$8D; 128
-		dc.b $7F,$7F,$9D,$E8,  0, $F,$5D,$FC,$FA,$BD,$9C,$79,$13,$A8,$9D,$44,$EA,$27,$51,$3A,$E1,$AD,$A0,  0; 192
-Nem_VSpring2:	dc.b   0,$14,$80,  4,  7,$25,$1A,$46,$3A,$66,$3C,$73,  0,$81,  4,  5,$14,  6,$66,$3D,$76,$30,$86,  5,$19,$15,$16,$36,$38,$87,  5,$13,$15,$14,$88,  5,$12,$16,$31,$25,$17,$89,  3,  1,$14,  8,$78,$FB,$8C,  5,$15,$17,$7C,$28,$FA,$36,$39,$56,$3B,$8D,  4,  4,$16,$36; 0
-					; DATA XREF: ROM:0001C142o
-					; ROM:0001C17Ao ...
-		dc.b $26,$37,$FF,  0,  0,  0,$BD,$33,$3C,$B2,$2E,$F5,$54,$5D,$EA,$8C,$8B,$BD,$55,$17,$7A,$A3,$22,$EF,$55,$45,$DE,$A9,$80,  0,  0,  7,$FD,$92,$A9,$DA,$76,$95,$4E,$D3,$B4,$AA,$76,$9D,$E0,  0,  0,  1,$FF,$6E,$78,$E7,$8E,$78,$E7,$8E,$78,$E7,$8C,  0,  0,  0,$3F,$4D; 64
-		dc.b $3C,$D2,$5F,$12,$BB,$37,$D6,$CA,$8B,$F1,$2B,$B3,$7D,$6C,$A8,$BF,$12,$BB,$37,$D6,$CA,$98,$2B,$FD,$DE,$96,$7F,$7E,$CD,$E9,$67,$F4,$DE,$96,$C0,  0,  0,  3,$FD,$2F,$6A,$5C,$FA,$FF,$76,$A5,$CF,$AF,$6A,$5C,$E0,  0,  0,  1,$E1,$EA,$33,$A8,$B4,$DE,$27,$9A,$29,$94; 128
-		dc.b $F1,$67,$38,$B4,$7E,$41,$BF,$53,$23,$A6,$89,$74,$C7,$C5,  0,  1,$E1,$EA,$33,$A8,$9E,$66,$F1,$FA,$79,$29,$9C,$A7,$26,$73,$8F,$F0,$5F,$D3,$7A,$5B,  0,  0,  0,  3,$3C,$4B,$3D,$24,$DA,$9B,$74,$A0,$78,$7C,$94,$74,$71,$8D,$2C,$4A,$34,$DF,$B9,$FD,$83,$19,$1F,$D8; 192
-		dc.b $44,$8E,$A3,$12,$F1,$49,$2B,$9B,$62,$BF,$90,$CC,$E4,$DA,$9B,$74,$A3,$C6,$FE,$87,$AF,$6A,$5C,$E0,  0,  0,  0,  0; 256
-Nem_HSpring2:	dc.b $80, $C,$80,  3,  2,$14, $A,$26,$38,$37,$7A,$46,$39,$55,$19,$68,$FA,$73,  3,$81,  2,  0,$15,$1B,$26,$3B,$57,$7B,$68,$FB,$86,  6,$3C,$88,  5,$1A,$89,  3,  4,$8C,  5,$18,$57,$7C,$8E,  6,$3A,$8F,  4, $B,$FF,$FB,$D2,$C2,$C2,$C2,$B5,$F2,$B0,$B0,$B0,$8A,$10,$B6; 0
-					; DATA XREF: ROM:0001C148o
-					; ROM:0001C180o ...
-		dc.b $BE,$E8,$42,$1D,$7F,$69,$B7,$5F,$DA,$6D,$B6,$DB,$E0,$42,$2B,$DD,$7B,$AF,$75,$F6,$84,$21,$1F,$45,$61,$61,$62,$BE,$5A,$F9,$58,$58,$58,$E3,$47,$E6, $F,$CC,$2E,$D6,$E3,$6A,$D5,$D5,$BA,$11,$43,$6E,$84,$50,$EA,$D5,$D5,$B7,$5D,$AD,$CC,$CA,$EF,$A9,$9B,$CC,$BE,$A5; 64
-		dc.b $5D,$5F,$D4,$5D,$44,$71,$67,$24,$2D,$F2,$78,$21,$1C,$5E,$48,$AD,$F2,$35,$BE,$48,$DB,$6F,$91,$CE,$4D,$3B,$9C,$1A,$1F,$E7,$A2,$35,$BE,$25, $A,$58,$B5,$50,$8B,$6A,$57,$EC,$66,$67,$AE,$E6,$6F,$D1,$A9,$7D,$4C,$9C,$69,$6A,$17,$28,$CE,$E1,$E1,$73,$22,$25,$1E,$2E; 128
-		dc.b $B3,$F9,$F9,$E8,$8C,$C9,$A7,$F4,  0,  0; 192
-Nem_DSpikes:	dc.b   0,$20,$80,  5,$1A,$16,$37,$25,$19,$35,$17,$45,$15,$55,$14,$65,$18,$73,  0,$81,  3,  1,$15,$16,$86,  4,  7,$87,  4,  8,$17,$7A,$27,$7B,$88,  5,$12,$16,$3B,$28,$F9,$89,  3,  2,$16,$38,$26,$39,$8A,  6,$3A,$16,$36,$8C,  5,$13,$17,$78,$27,$79,$38,$FA,$8D,  4; 0
-					; DATA XREF: ROM:0001C13Co
-					; ROM:0001C174o ...
-		dc.b   6,$FF,$18,$34,$B5,$6C,$D5,$2C,$68,$5B,  4,  0,  0,  0,$59,$A5,$72,$C5,$A3,$2C,$7F,$5B,$1B,$9F,$E6,$BE,$BF,$9B,$36,$7F,$DE,$CD,$A7,$FB,$D9,$B4,$DA,$65,$A6,$D3,$6F,$1A,$2D,$36,$F3,$B9,$6F,$AC,$96,$F3,$72,$DE,$2A,$5A,$74,$2D,$82,  0,  0,$3E,$26,$F4,$F0,$F5; 64
-		dc.b $F2,$F7,$FA,$7C,$F9,$FD,$36,$FE,$3F,$8D,$A9,$FF,$1A,$7F,$D6,$F2,$DF,$A6,$FA,$2C,$FF,$CC,  0,  0,  0,  0,  0,$F8,$9B,$D3,$C3,$D0,$B7,$F3,$37,$2D,$F5,$92,$DE,$6E,$5A,$6D,$52,$D3,$A1,$6C,$10,  0,  0,  1,$E1,$9E,$F3,$69,$B3,$E5,$A6,$D3,$68,$DE,$6D,$3F,$D6,$C6; 128
-		dc.b $9A,$7F,$CD,$94,$FF,$9A,$7F,$BA,$5A,$DF,$AD,$2D,$6D,$16,$2D,$6C,$96,$B5,$6C,  0,  0,$68,$D3,$83,$73,$DA,$CA,$B4,$4B,$75,$DD,$A3,$50,$54,$3F,$E8,$54,$15, $E,$74,$54,$15, $F,$B9,$4E,$53,$E4,$A7,$2A,$E5,$39,$A9,$4F,$42,$B0,$40,  0,$E1,$1A,$49,$1A,$BC,$91,$B9; 192
-		dc.b $79,$23,$9B,$3C,$91,$DD,$ED,$12,$47,$50,$F6,$89,$22,$A1,$ED,$25,$A2,$A2,$56,$DE, $A,$92,$CA,$82,$AE,$54,$50,$80,  0,  0,  0,  6,$39,$BA,$8E,$F9,$D1,$50,$BD,$AD,$15,$1C,$CB,$72,$9F,$F4,$39,$29,$E8,$53,$D0,$A7,$A1,$58,$20,  0,  0,  0,  1,$5E,$6F,$C7,$77,$32; 256
-		dc.b $46,$E7,$8A,$95, $A,$A6,$4A,$A5,$45, $C,$A8,$56, $E,  8,$E6,$BE,$FF,$93,$FA,$19,$3F,$A9,$67,$F8,$20,$46,$14,$50,$A8,$A1,  0,  0,  0,  2,$8B,$1F,$96,$E2,$E7,$D3,$F1,$9B,$7B,$57,$B7,$6A,$B6,$E3, $B,$10,$A9,$25,$45, $A,$A6,$4A,$A7,$89,$5F,$F7,$37,$ED,$54,$A0; 320
-		dc.b   0,  0,  0,  0,  0,$6F,$C5,$78,$AF,$3D,$67,$9F,$D5,$6B,$9D,$A5,$B7,$1B,$7C,$F4,$B6,$FE,$42,$EB,$F7,$1E,$97,$EE,$3D,$AE,$BB,$FD,$BA,$DA,$4F, $F, $B,$F5,$52,$78,$75,$B4,$BA,$93,$C2,$EB,$E7,$AE,$F8,$E9,$74,$B6,$FF,$C8,  0, $E,$B1,$B5,$25,$B5,$62,$5B,$5F,$D4; 384
-		dc.b $B6,$CB,$C7,$7B,$69,$47,$CE,$DC,$7C,$ED,$CF,$7B,$73,$AF,$D5,$73,$BF,$F2,$72,  0; 448
+Nem_HTZ_AutomaticDoor:incbin "artnem\HTZ Auto Door.bin"
+                even             
+Nem_HTZ_Seesaw:	incbin "artnem\HTZ Seesaw.bin"
+                even
+Nem_HPZ_Bridge:	incbin "artnem\HPZ Bridge.bin"
+                even
+Nem_HPZ_Waterfall:incbin "artnem\HPZ Waterfall.bin"
+                even         
+Nem_HPZ_Emerald:incbin "artnem\HPZ Emerald.bin"
+                even       
+Nem_HPZ_Platform:incbin "artnem\HPZ Platform.bin"
+                even        
+Nem_HPZ_PulsingBall:incbin "artnem\HPZ Pulsing Ball.bin"
+                even           
+Nem_HPZ_Various:incbin "artnem\HPZ Various.bin"
+                even       
+Nem_UnusedDust:	incbin "artnem\Unused - Dust.bin"
+                even
+Nem_CPZ_Platform:incbin "artnem\CPZ Platform.bin"
+                even
+Nem_WaterSurface:incbin "artnem\Water Surface.bin"
+                even
+Nem_Button:	incbin "artnem\Button.bin"
+                even
+Nem_VSpring2:	incbin "artnem\Vertical Spring.bin"
+                even
+Nem_HSpring2:	incbin "artnem\Horizontal Spring.bin"
+                even
+Nem_DSpring:	incbin "artnem\Diagonal Spring.bin"
+                even
 Nem_HUD:	incbin "artnem\HUD.bin"
                 even
-Nem_Lives:	dc.b $80, $C,$80,  3,  0,$13,  2,$25,$12,$36,$3B,$46,$36,$55,$1A,$66,$3C,$74,  6,$81,  3,  1,$15,$16,$26,$3D,$82,  5,$17,$83,  5,$15,$84,  5,$18,$85,  8,$F8,$86,  4,  7,$87,  5,$13,$16,$33,$88,  6,$37,$8B,  6,$38,$8C,  5,$14,$16,$3A,$28,$FA,$8D,  4,  8,$16,$32; 0
-					; DATA XREF: ROM:0001C0AAo
-		dc.b $28,$FB,$8E,  8,$F9,$8F,  6,$39,$FF,$FF,$8F,$FD,$C6,$3F,$6B,$7A,$8C,$58,$6F,$CB,$AC,  2, $E,$F2,$C4,$B9,$5F,$92,$3B,$FE,$26,$62,$F9,$CB,$81,$3B,$27,$E6,$E5,$17,$57,$FD,$20,$9F,$75,$F8,$15,$F9,$81,$57,$32,$21,$CA,$AF,$E2,$9D,$7E,$51,$54,$4E,$F9,$FE,$8E,$8D; 64
-		dc.b $FF,$7A,$F8,$FF,$95,$A8,$C2,$CC,$3F,$C4,$88,$CC,$15,$14,$53,$E3,  3,$F3,$E7,$67,$F9,$B8,$F8,$E6,$56,$9A,$9A,$21,$F7,$97,$1C,$8C,$6F,$F3,$55,$D7,$1F,$8A,$BA,$B0,$2F, $B,$F2,$D3,$7E,$25,$FB,$CF,$DB,$FF,$C5,$7E,$F0,$AA, $F,$B1,$41,$41,$95,$A5,$90,$A1,$95,$B6; 128
-		dc.b $FA,$10,$68,$3F,$7A,$65,$FB,$16,$60,$E7,$4F,$3F,$1F,$C7,$D3,$CF,$53,$3A,$23,$E8,$AE,$84,  8,$2C,$CD,$DC,  8,$32,$FB,$2B,$2F,$65,$66,$4E,$7B,$2F,$33,$DE,$67,$6C,$CE,$C5,$E6,$75,$3F,$2D,$D9,$1D,$11,$D4,$35,$35, $D,$1E,$16,$C9,$64,$47,$A2,$CC,$CC,$CC,$CC,$C5; 192
-		dc.b $7D,$19,$50,$40,$83,$B6,$5A,$F7,$6E,$8A,$A0,$81,  6,$5F,$64,$15,$EB,$33,$33,$33,$20,  0; 256
-Nem_Ring:	dc.b   0, $E,$80,  6,$3D,$15,$19,$25,$18,$34, $A,$44,  9,$55,$1A,$65,$1C,$76,$3A,$85,  2,  0,$15,$1B,$86,  4,  8,$16,$3B,$28,$FA,$37,$7C,$8C,  3,  3,$14, $B,$38,$FB,$8D,  3,  2,$16,$3C,$FF,$94,$E3, $B,$EF,$2A,$D6,$FD,$13,$46,  6,$A8,$4C,$A2,$E4,$71,$23,$89,$1C; 0
-					; DATA XREF: ROM:0001C0B0o
-		dc.b $48,$A1,$C8,$E2,$44,$E1,$D0,$9F,$D6,$36,$AE,$7F,$4B,$F5,$3F,$AC,$EF,$1B,$4F,$BA,$DA,$EE,$47,$12,$27,$12,$38,$91,$C4,$8E,$24,$BA,$13,$54,$AF,  2,$B5,$EC,$7E,$B3,$CC,$DA,$DE,$3F,$4B,$D6,$3C,$95,$74,$9A,$30,$9A,$29,$32,$86,$8A,$1A,$91,$A9,$1A,$91,$A9,$1A,$24; 64
-		dc.b $6A,$47,$E4,$96,$A4,$4F,$5B,$BD,$5C,$3A,$13,$87,$42,$71,$29,$C3,$A1,$43,$A1,$38,$A1,$38,$A1,$38,$A1,$38,$A1,$42,$A5,$66,  4,$D6,$3C,$B3,$17,$BA,$DF,$5E,$DC,$BE,$DE,$17,$C5,$95,$F1,$65,$7C,$59,$5F,$16,$53,$ED,$AC,$A7,$DB,$59,$3E,$CC,$9F,$66,$45,$68,$C8,$AD; 128
-		dc.b $19,$3F,$7A,$64,$FD,$E9,$83,$C2,$77,$C3,$8B,$8F,$44,$14,$28,$47,$A2,$7F,$4D,$64,$50,$8A,$20,$D3,$E2,$E1,$A5,$A4,$D6,$97,$5D,$74,$71,$68,$66,  4,$E1,$A3,  3,$32,$61,$70,$EB,$47,$16,$86,$69,$70,$EB,$AE,$A8,  0; 192
+Nem_Lives:	incbin "artnem\Lives.bin"
+                even
+Nem_Ring:	incbin "artnem\Rings.bin"
+                even
 Nem_Monitors:	incbin "artnem\Monitors.bin"
                 even
-Nem_VSpikes:	dc.b $80,  8,$80,  4, $B,$24, $C,$35,$1C,$57,$7D,$71,  0,$81,  5,$1D,$82,  4, $A,$87,  5,$1E,$88,  7,$7C,$8A,  3,  4,$8F,  4, $D,$FF,$E7,$BF,$C1,$D3,$EC,$B8,$7F,  2,$AE,$8E,$4C,$8E,$6D,$E8,$C9,$59,$53,$3B,$7D,$73,$73,$45,$C1,$5F,$C0,$A0,$4F,$9E,$FD,$37,$BE,$33; 0
-					; DATA XREF: ROM:0001C0EEo
-					; ROM:0001C136o ...
-		dc.b $E3,$FC,$1A,$FB,$2E,  1,$C9,$57,$50,$FB,$A3,$27,$2A,  1,  0,  0; 64
+Nem_VSpikes:	incbin "artnem\Vertical Spikes.bin"
+                even
 Nem_Points:	incbin "artnem\Points.bin"
                 even
 Nem_Lamppost:	incbin "artnem\Lamppost.bin"
                 even
 Nem_Signpost:	incbin "artnem\Signpost.bin"
                 even
-Nem_Crocobot:	incbin "artnem\Enemy Crocobot.bin"
+Nem_Gator:	incbin "artnem\Enemy Gator.bin"
                 even
-Nem_Buzzbomber:	dc.b   0,$1C,$80,  5, $C,$15, $D,$25,$12,$35,$17,$47,$76,$57,$7A,$66,$37,$73,  0,$81,  3,  1,$14,  5,$26,$34,$37,$77,$46,$3A,$86,  5,$11,$16,$39,$28,$FA,$87,  5,$13,$88,  5, $F,$16,$36,$89,  4,  4,$15,$18,$26,$3C,$8B,  5,$16,$16,$35,$8C,  5,$10,$15,$15,$27,$7B; 0
-					; DATA XREF: ROM:0001C194o
-					; ROM:0001C1ECo ...
-		dc.b $8D,  5,$14,$16,$38,$28,$F8,$8E,  5, $E,$16,$33,$8F,  6,$32,$18,$F9,$FF, $D,$D6,$5F,$8A,$66,$A6,$8D,$B3,$2C,$59,$C6,$F4,$DF,$8D,$F8,$BC,$69,$59,$46,$74,$E6,$46,$71,$59,$19,$C5,$65,$4A,$ED,$2A,$57,$89,$53,$F7,$92,$A7,$BA,$5F,$F7,$BF,$8A,$B7,$AB,$1A,$30,$EC; 64
-		dc.b $AC,$A6,$88,$5B,$4D,$30,$DA,$33,$BB,$69,$25,$F8,$EA,$BC,$77,$8C,$38,$54,$7C,$DF,$C1,$48,$FE,$5D,$FC,$14,$9E,$DF, $B,$8F,$8E,$BE,$3A,$A3,$7A,  7,$6F,$E3,$AE,$D3,$8C,$E2,$B8,$FD,$C1,$FF,$49,$42,$85, $A,$16,$79,$23,$B2,$5D,$F3,$45,$94,$D3,$BB,$53,$FA,$2C,$FF; 128
-		dc.b  $A,$7F,$C7,$FA,$2D,$EA,$5A, $E,$D3,$33,$7D,$F9,$31,$7A,$37,$63,$37,$A3,$70,$5E,$92,$57,$A0,  2,$56,$DC,$FA,$5D,$A7,$19,$BF,$1F,$F1,$DC,$80,  0,  0,$30,$EB,$A3,$3B,$E6,$B6,$3E,$72,$99,$A6,$99,$98,$BB,$4C,$CE,$BA,$6A,$52,$DA,$6B,$8D,$31,$D6,$15,$87,$C5,$40; 192
-		dc.b   0,  0,$6B,$E9,$22,$EE,$C5,$1D,$1B,$AE,$65,$8F,$62,$EA,$B1,$7A,$D9,$15,$E8,$70,$AC,$2C,$C1,$EC,$83,$79,$99,$BE,$FC,$98,$BD,$1B,$B1,$9B,$D1,$B8,$2F,$49,$2B,$D0,  0,  0,$BB,$F7,$33,$DC,$C7,$73,$36,$EB,$22,$F5,$70,  0,  0,  0,  0,  0,$9B,$D9,$6D,$E8,$A1,$74; 256
-		dc.b $51,$AB,$67,$14,$6A,$6B,$A3,$71,$DD,$BF,$D1,$6F,$56,$97,$9A,$C8,$F8,$6F,$DF,$D2,$80,  0, $B,$6E,$D8,$71,$BA,$45,$CB,$66,$97,$45, $D,$9B,$9F,$96,$2C,$B2,$A6,$65,$3B,$BA,$38,$D3,$3F,$17,$F5,$6B,$FB,$9B,$68,$8C,$EB,$17,$2F,$37,$7C,$66,$97,$3B,$7A,$28,  0,  0; 320
-		dc.b   0,$2F,$5E,$D0,$CE,$17,$77,$2E,$AB,$61,$9D,$6F,$EC,  0,  0,  0,  1,$DB,$DD,$E1,$FA,$E8,$49,$DF,$4E,$AB,$21,$FA,$EA,$CB,$D8,  0,  0,  0,$64,$3D,$41,$90,$6F,$F3,$1B,$5F,$D7,$65,$ED,$DC,$BB,$E6,$19,$7D,$3B,$26,$41,$DC,$BA,$19,$57,$2C,$F2,$85,$1B, $F,$98,$52; 384
-		dc.b $F5,$A0,  0,  0,$19, $E,$D5,$64,$1B,$5F,$98,$51,$95,$CB,$3C,$99,$57,$7D,$3A,$B9,$7F,$19,$D0,$CB,$F6,$CE,$AE,$5F,$B6,$CA,$8C,$86,$5C,$E5,  9,$57,$80,$D0; 448
-Nem_Bat:	dc.b   0,$3A,$80,  5,$14,$14,  8,$25,$15,$35,$16,$45,$12,$56,$35,$67,$77,$73,  1,$81,  3,  0,$14,  7,$26,$33,$37,$7A,$86,  5,$13,$16,$37,$87,  5,$17,$16,$34,$27,$72,$36,$36,$48,$F6,$57,$78,$88,  4,  6,$15,$18,$26,$38,$89,  3,  2,$16,$32,$26,$3A,$38,$F8,$8B,  7; 0
-					; DATA XREF: ROM:0001C1E0o
-					; ROM:0001C1F2o
-		dc.b $76,$18,$F7,$8C,  7,$73,$8E,  7,$79,$FF,$A3,$C8,$7B,$8B,$76,$FC,$F7,$61,$5F,$DF,$76,$CE,$9F,$9E,$7C,$9A,$3D,$62,$1E,$6D,$94,$3C,$DD,$42,$13,$75,$54,$37,$55,$1F,$16,$7C,$AA,$2E,$EA,  3,$5F,$38,  9,$A6,$F0,$13,$5F,$79,$3C,$87,$B8,$A8,$ED,$F9,$EE,$D9,$F6,$FD; 64
-		dc.b $F3,$64,$FF,$9E,$A6,$3D,$46,$4D,$37,$84,$F3,$78,$4F,$30,$A1,$6E,$15,$7E,  5,$72,$7B,$27,$B8,$AE,$77,$61, $F,$36,$42,$37,$BB,$21,$60,$9A,$EA,$75,  9,$B4,$A8,$CB,$16,$1D,$59,$F2,$B0,$4F,$20,$9B,$57,$92,$69,$CB,$39,$26,$9C,$B9,$F9,$9C,$B9,$F9,$9E,$BC,$FC,$EB; 128
-		dc.b $F9,$CE,$FC,$E6,$AE,$C8,$46,$8C,$85,$71,$90,$AF,$42,$D9,$3D,$9D, $B,$26,$12,$7D,$66,$CA,$59,$CA,$6C,$A5,$3F,$3C,$E5,$3F,$3C,$E5,$E7,$9E,$BF,$9C,$D7,$99,$24,$93,$A8,$D5,$E4,$ED,$67,$C5,$5F,$88,$7C,$5D,$A9,$9B,$72,$A0,$60,$DC,$A8,$2E,$36,$A0,$98,$DA,$82,$E3; 192
-		dc.b $6A,  6,$1B,$53,$3D,$A8,$3C,$50,$78,$A0,$F0,$3C,$4C,$6D,$BD,  7,$29,$D4,$5F,$7B,  9,$EA,  9,$24,$9A,$DD,$4A,$EA,$53,$5C,$A1,$5D,$53,$A7,$4F,$50,$C1,$9E,$30,$30,$F4,$C0,$E1,$F8, $C,$98,$32,$61,$A7,$F2,  7,$2F,$E4, $D,$B8,$1B,$32,$61,$ED,$C0,$F6,$C0,$F6,$C0; 256
-		dc.b $F6,$58,$1E,$18,$78,$61,$B6,$F7,$61,$FA,$68,$9B, $E,$E0,$92,$49,$24,$92,$49,$24,$8E,$EF,$AB,$3C,$93,$3D,$B8,$7A,$E9,$87,$8E,$49,$9E,$9B,$61,$F6,$DE,$83,$4D,$ED,$79,$EB,$32,$49,$24,$92,$49,$24,$93,$6C,$E9,$EB,$26,$A0,$60,$B8,$A0,$B8,$C6,$94,$13, $D,$CA,$82; 320
-		dc.b $E3,$6A,  6,$1B,$53,$3D,$A8,$3C,$50,$78,$A0,$D3,$F6,$C3,$F4,$C4,$9A,$67,$4F,$E0,$E0,$2F,$DC, $F,$E4,$2C, $F,$6E,$3C,$26,$FF,$3B,$7F,$DF,$FE,$FF,$F7,$DB,$FE,$C4,$EB,$C9,$46,$FD,$54,$2E,$4A,$3D,$2A,$FE,$E3,$D6,$8A,$FF,$B8,$1E,$CA,$EC,$3C,$60,$7B,$2C, $D,$37; 384
-		dc.b $D3,  2,$71,$FB,$66,  4,$92,$49,$30,$3B,$B7,$AA,$E9,$C6,$7A,$2D,$EB,$FA,$62,$49,$24,$92,$75,$FE,$8C,  6,$1D, $A, $B,$8E,$15,  4,$C3,$68,$D4,$17,$1B,$50,$30,$DA,$99,$ED,$41,$FD,$62,$49,$24,$92,$FA,$E5,$9D,$71,$D6,$7A,$71,$D7,$B7,$1F,$F7,$FF,$BF,$FD,$89,$24; 448
-		dc.b $92,$63,$92,$8D,$FA,$AE,$5C,$94,$67,$21,$8C,$E1,$9F,$87,$BE,$1F,$8E,$58,$76,$FF,$30,$24,$92,$49,$24,$91,$DD,$B3,$B7,$ED,$B3,$A0,$24,$92,$49,$B0,$5D,$C3,$48,$21,$DC,$49,$D5,$86,$42,$1F,$20,$A8,$30,$86,$56,$1C,$12,$49,$32,$CE,$BE,$AB,$9A,$8C,$FA,$87,$F8,$8F; 512
-		dc.b $EC,$C7,$F6,$45,$3E,$38,$A7,$EE,  9,$24,$93,$6C,$E4,$E9,$EA,$ED,$90,$87,$BE,$17,$AE,$4D,$93,$ED,$87,$F0,$3F,$4D,$B5,$BF,$6C,$49,$24,$93,$4B,$A9,$4D,$6A,$AE,$A4,$3B,$B3,$C8,$60,$59,$86,$1E,$2E,$C1,$B7,$14,$FD,$30,$24,$92,$6C,$3B,$BC,$5E,$A1, $A,$2A,$86,$42; 576
-		dc.b $F5,$17,$65,$61,$A3, $A,$8E,$4C,$23,$7D,  3, $A,$EF,$89,$CA,$60,$93,$60,$9A,$EA,$75,  9,$B4,$A8,$CB,$16,$1D,$59,$F2,$B0,$4F,$20,$9B,$57,$92,$69,$CB,$39,$26,$9C,$B9,$F9,$9E,$BC,$FC,$F7,$E7,$DF,$99,$9A,$BB,$21,$1A,$32,$15,$C6,$42,$BD, $B,$64,$F6,$74,$2C,$98; 640
-		dc.b $49,$F5,$9B,$29,$67,$29,$B2,$94,$FC,$F3,$97,$9E,$7A,$F3,$EF,$CC,$9C,$E5,$EE,$25,$EE,$F6,$F7,$FE, $C,$76,$18,$CA,  7,$EE,$14,$37,$4D,$38,$C2,$6D,$E1,$82,$76,$84,$13,$A8,$1F,$C9,$81,$F0,$2A,$32,$7A,$FF,  6,  6,$3F,$4D,  1,$B9,$4E,$1D,$B4,$50,$13,$68,$D0,$32; 704
-		dc.b $E2,$A3,$E2,$A3,$E2,$DE,$A4,$19,$6A,$F2,$4D,$39,$67,$24,$D3,$24,$93,$5C,$EC,$3F,$56,$20,$7B,$FE,$7B,$B5,  7,$BF,$EF,$A8,$3B,$7E,$FB,$B5,$10,$ED,$F9,$EE,$D1,$97,$A8,$E9,$EB,$96,$75,$C9,$EC,$9E,$4F,$71,$61,$36,$42,$B3,$BE,$10,$8D,$1B,$21,$17,$C6,$42,$2E,$DD; 768
-		dc.b   8,$6E,$85,$7A,$16,$E8,$5B,$21,$2C,$E4,$C8,$49,$F5,$9B,$29,$67,$29,$B2,$24,$93,$20,  0; 832
-Nem_Octopus:	dc.b   0,$3A,$80,  6,$31,$16,$2B,$26,$32,$36,$33,$48,$F3,$56,$37,$66,$30,$73,  0,$81,  3,  1,$14,  6,$26,$36,$37,$74,$58,$F6,$68,$F2,$82,  4,  4,$14,  7,$25,$11,$37,$75,$58,$F7,$83,  4,  5,$15,$16,$26,$35,$37,$72,$47,$76,$57,$77,$84,  5,$12,$16,$34,$85,  7,$73; 0
-		dc.b $86,  5,$10,$16,$38,$87,  5,$13,$88,  6,$2F,$89,  6,$2E,$8C,  5,$14,$8D,  6,$2A,$8E,  7,$7A,$17,$78,$FF,  0,  0,$30,$4C,$13,  9,$EE,$87,$14,$CD, $A,$49,$32,$42,$86,$11,$B2,$19,$6B,$A2,$95,$F7,$2A,$9D,  0,$F3,$8D,$71,$D7,$14,$EE,$9F,$F3,$FF,$1C,$ED,  9,$F6; 64
-		dc.b $FD,$34,$F9,$37,$1C,$9B,$8E,$4D,  9,$EA,$9F,$A6,$9D,$A0,$57,$F2,$FA,$A1,$EE,$87,$B8,$11,$F3,$D6,$35,$F2,$8E,$3D,$DD,$7F,$49,$AA,$69, $D,$2C,$92,$FD,$34,$AC,$9A,$43,$48,$2A,$2F,$E9,$14,$AA,$7F,$8D,$3F,$C6,$9D,$A0,$A9,$D8,$BF,$77,  0,  0,$13,  4,$C1,$30,$7D; 128
-		dc.b $DF,$77,$DD,$F7,$7D,$DF,$74,$C2,$27,$23,$8B,  0,  0,  3,$24,$97,$9D,$93,$2E,$A6,$B8,$B5,$6E,$D5,$C4,$E4,$8A,$D9,$BC, $E,$70,$64,$EE,$63,$CB,$13,$EF,$5B,$75,$CD,$9E,$BF,$6A,$A9,$C5,$2A,$A5,$5F,$95,$A7,$E9,$69,$54,$90,$CA, $A,$92,$42,$92,$54,$28,$56,$4A,$8C; 192
-		dc.b $F2,$7D,$91,$5C,$E2,$D1,$39,$B9,$1B,$F6,$8D,$BF,$E5,$7C,$EF,$BA,$37,$F0,$67,$73,$DF,  3,$3B,$EE,$6B,$8C,$EF,$B9,$BF,$5B,$4A,$9A,$AF,$D2,$D2,$AF,$D2,$F1,$69,$41,$4E,$88,$51,$64,$92,$54,$64,$5D,$15,$36,$4D,$51,$B1,$28,$AF,$99,$7D,$E0,$77,$4C,  8,  3, $E,$77; 256
-		dc.b $6F,$4E,$7B,$D0,$EF,$A1,$F3,$28,$A7,$34,$2E,$72,$92,$17,$35,$D9, $B,$9C,$51,$53,$12,$EC,$F5,$94,$38,$C0,$E5,  2,  0,  0,  1,$9F,$2C,$97,$AE,$50,$E8,  0,  2,$27,$23,$8B,  0,  0,$C2,$C8,$CB,$16,$B4,$93,$65,$D1,$7A,$43,$60,  0,  5,$3B,$98,$F2,$C4,$FB,$D6,$DD; 320
-		dc.b $73,$67,$AF,$DA,$AA,$71,$4A,$A9,$52,$F1,$25,$4A,$55,$2D,$5C,$C9,$7A,$B2,$FF,$C4,  0,  7,$68,$DB,$FE,$57,$CE,$FB,$A3,$7F,  6,$77,$3D,$F0,$33,$BE,$E6,$B8,$CE,$FB,$9B,$F5,$B4,$A9,$AA,$E3,$9D,$2A,$84,$B9,$C9,$59,$3F,$68,$AD,$19,$43,$C8,  0,  2,$60,$40,$18,$73; 384
-		dc.b $C2,$9C,$F7,$A7,$F0,$6B,$92,$A7,$F0,$79,$27,$94,$F6,  0,  0,  0,  0,  1,$D7,$33,$D7,$2E,$93,  0,  0,  0,  0,  0,$36,$CF,$69,$67,$79,$81,  0,  1,$13,$91,$C5,$80,  0,$61,$B2,$E8,$DA,$6A,$65,$AC,$7F,$E2,$40,  0,$14,$EE,$63,$CB,$13,$EF,$5B,$75,$CD,$9E,$BF,$6A; 448
-		dc.b $A9,$C5,$2A,$A5,$4C,$B2,$82,$A3,$2C,$96,$25,$24,$BD,$4C,$3C,$80,  0,$76,$8D,$BF,$E5,$3B,$A7,$74,$67,  3,$3B,$EE,$7B,$E6,$7F,$31,$73,$5D,$79,$BE,$E6,$FD,$6D,$2A,$6A,$97,$48,$39,$D7,$48,$2A,$1E,$5A,$2A,$79,$40,  0,  2,$60,$40,$18,$73,$C2,$9C,$F7,$7E,$95,$97; 512
-		dc.b $5F,$64,$D7,$FE,$26,$F0,  0,  0,  0,  0,$1B,$79,$F4,$CF,$6F,$C5,  0,  0,  0,  0,  0,$1A,$A6,$56,$8E,$53,$E8,  0,  2,$27,$23,$8B,  0,  0,$C1,$F6,$54,$DB,$4B,$1F,$D2,$6A,$90,$F2,  0,  0,$53,$B9,$8F,$2C,$4F,$BD,$6D,$D7,$36,$7A,$FD,$AA,$A7,$14,$AA,$95,$6A,$57; 576
-		dc.b $45,$72,$B2,$B3,$94,$59,$2B,$F4,$86,$C0,  0,$3B,$46,$DF,$F2,$9C,$27,$74,$66,$61,$F9,$7B,$9E,$F8,$19,$DF,$73,$5D,$7C,$CD,$CD,$FA,$DA,$54,$D5,$32,$2E,$88,$51,$92,$D2,$8B,$3D,$BF,$E2,  0,  1,$30,$20, $C,$39,$E1,$4E,$7B,$C7,$6A,$D9,$EC,$C9,$B4,$56,$1E,$40,  0; 640
-		dc.b   0,  0,  0,$3A,$66,$BD,$32,$9E,$D3,  0,  0,  0,$C5,$F2,$8D,$AB,$4E,$D8,$A7,$74,$FF,$1A,$6A,$F6,$4B,$46, $A,$96,$7E,$14,$D9,$B8,$53,$66,$84,$F5,$4F,$D3,$4D,$65,  2,$BF,$97,$B3,$9E,$C5, $F,$60,  0,  0,  1,$5F,$EF,$32,$FE,$E5,$7F,$DC,$AF,$FB,$95,$FF,$73,$2F; 704
-		dc.b $DE,  0,  0,  0, $F,$3F,$19,$F8,$E3,$C5,$7E,$BF,$6D,$EB,$1F,$5F,$D6,$F1,$FD,$6F,$58,$FA,$FD,$B7,$AA,$FC,$71,$E3,$3F,$19,  0,  0; 768
-Nem_Triceratops:dc.b   0,$32,$80,  5,$15,$16,$30,$26,$2E,$36,$33,$47,$71,$57,$75,$67,$76,$74,  6,$81,  3,  1,$15,$13,$27,$74,$36,$36,$46,$2D,$78,$F3,$82,  6,$2F,$17,$6E,$83,  4,  8,$17,$6B,$26,$34,$84,  5,$12,$16,$2C,$27,$70,$38,$F5,$48,$F6,$85,  7,$77,$86,  5,$14,$17,$72,$87; 0
-					; DATA XREF: ROM:0001C1F8o
-		dc.b   4,  7,$17,$73,$88,  4,  4,$17,$6F,$48,$F7,$89,  3,  0,$16,$31,$27,$6A,$38,$F2,$8A,  4,  5,$16,$32,$27,$78,$8C,$18,$F4,$FF,$AB,$E6,$A9,$57,$B9,$51,$51,$F0,$54,$5D,$F4,$4F,$E5,$25,$10,$7E,$E9,$39,$A0,$51,$97,$F5,  7,$F5,$23,$82,$72,$49,$44,$9F,$F4,$CE,$B2; 64
-		dc.b $89,$FE,$99,$25,$13,$E4,$E9,$2B,$D3,$F4,$E8,$B2,$BE,$17,$7A,$CA,$37,$47,$A9,$FE,$1C,$A6,$A8,$A3,$34,$F0,$2E,$F0,$14,$E1,$FB,$A0,$A5,$14,$28,$50,$8E,$14,$28,$4A,$3A,$85,  9,$47,$D4,$A9,$47,$53,$25,$4E,$6A, $C,$2F,$35,$C4,$C4,$B2,$D4,$75,$D8,$14,$18,$E0,$B8; 128
-		dc.b $ED,$20,$A0,$EF,$21,$71,$A2,$15,$21,$41,$C1,$3A,$A2,$F1,$47,$1C,$5D,$70,$A5,$C8,$32,$22,$CC,$55,$39, $F,$55,$A3,$A0,$B3,$5B,$A5,$16,$51,$BB,$22,$B1,$FB,$27,$51,$1F,$B2,$7C,$7F,$86,$A1,$E5,$FB,$35,  7,$D9,$71,$A7,$FB,$3F,$8D,$E9,$46,$66,$69,$76,$E1,$C7,$5D; 192
-		dc.b $99,$EE,$89,$66,$37,$44,$AE,$1B,$A2,$57, $F,$D1,$44,$B0,$12,$D2,$58, $B,$34,$95,$47,$AC,$4A,$BF,$AC,$FD,$6F,$79,$7F,$33,$F3,$BD,$FA,$D0,$60,$B8,$53,$9D,$55,$30,$2F,$2A,$BD,$1E,$A5,$E2,$A9,$47,$B2,$2F,$AE,$5A,$6E,$AC,$B4,$FD,$15,$46,$52,$D0,$26,$5E,$AB,$CF; 256
-		dc.b $2B, $A,$51,$D0,$4F,$7D,$11,$48,$C9,$28,$8A, $E,$2A,$EA,$30,$38,$B8,$EB,$8F,$1F,$69,$A5,$A8, $F,$B8,$3E,$39,$3A,$6E, $E,$81,$E9,$B8,$82,$F4,$4D,$75,$28,$E8,$BA,$E7,$FD,$46,$66,$66,$66,$62,$EA,$45,$F0,$72,$22,$F3,$12,$2A,$12,$24,$65,$B9,$28,$F6,$17,$4B,$DD; 320
-		dc.b $3A,$20,$84,$DB,$4B,$65,$85,$B7,$5B,$75,$B7,$5B,$9E,$D9,$ED,$C7,$A7,$62,$DE,$D3,$4B,$50,$1F,$7D,$5F,$DA,$FF,$C8,$BC,$82,  8,$BD,$F0,$E1,$B9,$2B,$C3,$76,$BC,$4A,$A6,$80,$A7,$3A,$6B,$C5,$C5,$10,$5C,$2B,$45,$EA,$8C,$CD,$71,$75,$22,$F8,$39,$11,$79,$89,$6A,$48; 384
-		dc.b $91,$96,$28,$E9,$61,$BD,$28,$9B,$24,$25,$A3,$5D,$BA,$EB,$6C,$61,$6D,$D6,$DD,$6E,$7B,$67,$B7,$1E,$9D,$8B,$7B,$4D,$2D,$40,$7D,$F5,$7F,$68,$2F,$FE,$48,$20,$82,$19,$99,$99,$99,$99,$8B,$A9,$17,$C1,$C8,$8B,$E0,$CA,$78,$C1,$B0,$2E,$29,$61,$D4,$51,$D2,$62,$69,$44; 448
-		dc.b $35,$B0,$A3,$A1,$AD,$87,$F4,$47,$85,$EE,$90,$62,$CB,$D0,$41,$8B,$37,$6B,$3A,$E5,$FB,$33,$E4,$8A,  8,$21,$E8,$EA,$6A, $B,$8A,$29,$CD,$C3,$B3,$33,$33,$37,$6B,$38,$D9,$18,$2E,$14,$B2,$AA,$98,$17,$95,$5E,$8F,$52,$F1,$54,$A3,$D9,$17,$D7,$2D,$37,$56,$5A,$7E,$8A; 512
-		dc.b $A3,$29,$68,$13,$2F,$55,$E7,$95,$85,$28,$E8,$27,$BE,$88,$A4,$64,$94,$45,  7,$15,$75,$18,$1C,$5C,$75,$C5,$99,$99,$99,$9B,$AB,$E6,$A9,$57,$B9,$51,$51,$F0,$54,$5D,$F4,$4F,$E5,$25,$10,$7E,$E9,$39,$A0,$51,$92,$7B, $B,$23,$84,$4A,$F8,$B2,$89,$2D,$76,$72,$75,$E0; 576
-		dc.b $7F,$4C,$92,$89,$F2,$74,$95,$E9,$FA,$74,$59,$5F, $B,$BD,$65,$1B,$A3,$D4,$FF, $E,$53,$F6,$9A,$5A,$80,$FB,$EA,$FE,$D0,$5F,$FC,$90,$41,  4,$33,$33,$33,$33,$33,$2A,$28,$CD,$3C, $B,$BC,  5,$38,$7E,$E8,$29,$45, $A,$14,$23,$85, $A,$12,$8E,$A1,$42,$51,$F5,$2A,$51; 640
-		dc.b $D4,$C9,$53,$9A,$83, $B,$CD,$71,$31,$2C,$B5,$1D,$76,  5,  6,$38,$2E,$3B,$48,$28,$3B,$C8,$5C,$68,$85,$48,$50,$75,$4F,$79,$E4,$BF,$C2,$C8,$7F, $B,$92,$7F, $B,$7A,$FF, $C,$6C,$E8,$6E,$B6,$EB,$6E,$B6,$EB,$6E,$B7,$3D,$B3,$DB,$8F,$4E,$C5,$8F,$E3,$7D,$3F,$7B,$3F; 704
-		dc.b $EE,$CF,$FA,$BE,$73,$13,$D5,$30,$71,$20,$89,$89,$82,$27,$A9,$48,$9E,$39,$6C,$26,$BB,  5,$29,$68,$54,$FE,$8A,$3F,$9F,$9D,$D6,$FF,$F7,$FF,$BF,$F5,$F3,$FE,$4F,$4C,$4E,$A9,$E5,$35,$13,$CB,$F5,  2,$7E,$E2,$7B,$E7,$4E,$9B,$CF,$22, $A,$3D,$1C,$83,$57,$A3,$91,$3A; 768
-		dc.b $F4,$13,$C2,$DB,$BA,$71,$EF,$DB,$BF,$6E,$F2,$EA,$6F,$97,$19,$45,$F2,$CE,$C8,$BE,$45,$6B,$C2, $A,$3A,$F0,$29,$CD,$6C,$3E,$55,$9F,$93,$33,$33,$36,  7,$F1,$BE,$9F,$BD,$9F,$F7,$67,$FD,$5E,$83,$FA,$22,$7A,$A6, $E,$A9,$89,$F9,$11,$30,$42,$EC,$26,$BB,  3,$BF,$61; 832
-		dc.b $FA,$8B,$42,$FF,$87,$2F,$3F,$3B,$AD,$FF,$EF,$FF,$7F,$EB,$E7,$FC,$9B,$7C,$BA,$78,$41,$3F,  5,$C4,$D5,$27,$41,$3F,$D4,$1A,$6D,$BE,$8F,$6F,$22, $D,$7F,$4E,$44,$EB,$D0,$4F,  3,$8C,$EE,$E9,$C7,$BF,$6E,$FD,$BB,$CB,$A9,$BE,$5C,$65,$17,$CB,$3B,$22,$F9,$15,$AF,  8; 896
-		dc.b $28,$EB,$C0,$A7,$35,$B0,$F9,$56,$7E,$4C,$CC,$CC,$CC,$CC,$CC,$CC,$CD,$76,$BE,$31,$F8,$CD,$2E,$A7,$EB,$35,$E1,$CB,$F1,$9F,$B3,$AC,$7E,$33,$4C,$F5,$B3,$33,$33,$33,$33,$75,$D3,$38,$F4,$D3, $E,$5E,$9A,$56,$9F,$BC,$FD,$9F,$A6,$97,$68,$D9,$80,  0; 960
-Nem_Dinobot:	incbin "artnem\Enemy Dinobot.bin"
+Nem_Buzzer:	incbin "artnem\Enemy Buzzer.bin"
                 even
-Nem_HPZ_Piranha:incbin "artnem\Enemy HPZ Piranha.bin"
+Nem_BBat:	incbin "artnem\Enemy BBat.bin"
                 even
-Nem_Seahorses:	incbin "artnem\Enemy Seahorse.bin"
+Nem_Octus:	incbin "artnem\Enemy Octus.bin"
+                even
+Nem_Triceratops:incbin "artnem\Enemy Triceratops.bin"
+                even
+Nem_Redz:	incbin "artnem\Enemy Redz.bin"
+                even
+Nem_BFish:      incbin "artnem\Enemy BFish.bin"
+                even
+Nem_Aquis:	incbin "artnem\Enemy Aquis.bin"
                 even
 Nem_UnusedRollingBall:incbin "artnem\Unused - Rolling Ball.bin"
                 even
-Nem_UnusedMotherBubbler:incbin "artnem\Unused - Enemy Bubbler's Mother.bin"
+Nem_MotherBubbler:incbin "artnem\Enemy Bubbler's Mother.bin"
                 even
-Nem_UnusedBubbler:incbin "artnem\Unused - Enemy Bubbler.bin"
+Nem_Bubbler:    incbin "artnem\Enemy Bubbler.bin"
                 even
 Nem_Snail:	incbin "artnem\Enemy Snail.bin"
                 even
-Nem_EHZ_Piranha:incbin "artnem\Enemy EHZ Piranha.bin"
+Nem_Masher:     incbin "artnem\Enemy Masher.bin"
                 even
 Nem_BossShip:	incbin "artnem\Boss Ship.bin"
                 even
