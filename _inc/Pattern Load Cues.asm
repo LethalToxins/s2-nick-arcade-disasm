@@ -1,65 +1,94 @@
-ArtLoadCues:	dc.w PLC_Main-ArtLoadCues,PLC_Main2-ArtLoadCues; 0
-		dc.w PLC_Explode-ArtLoadCues,PLC_GameOver-ArtLoadCues; 2
-		dc.w PLC_GHZ-ArtLoadCues,PLC_GHZ2-ArtLoadCues; 4
-		dc.w PLC_CPZ-ArtLoadCues,PLC_CPZ2-ArtLoadCues; 6
-		dc.w PLC_CPZ-ArtLoadCues,PLC_CPZ2-ArtLoadCues; 8
-		dc.w PLC_EHZ-ArtLoadCues,PLC_EHZ2-ArtLoadCues; 10
-		dc.w PLC_HPZ-ArtLoadCues,PLC_HPZ2-ArtLoadCues; 12
-		dc.w PLC_HTZ-ArtLoadCues,PLC_HTZ2-ArtLoadCues; 14
-		dc.w PLC_S1TitleCard-ArtLoadCues,PLC_Boss-ArtLoadCues; 16
-		dc.w PLC_Signpost-ArtLoadCues,PLC_Invalid-ArtLoadCues; 18
-		dc.w PLC_Invalid-ArtLoadCues,PLC_GHZAnimals-ArtLoadCues; 20
-		dc.w PLC_LZAnimals-ArtLoadCues,PLC_CPZAnimals-ArtLoadCues; 22
-		dc.w PLC_EHZAnimals-ArtLoadCues,PLC_HPZAnimals-ArtLoadCues; 24
-		dc.w PLC_HTZAnimals-ArtLoadCues,LeftoverArt_Unknown-ArtLoadCues; 26
-		dc.w LeftoverArt_Unknown+2-ArtLoadCues,LeftoverArt_Unknown+4-ArtLoadCues; 28
-		dc.w LeftoverArt_Unknown+6-ArtLoadCues,LeftoverArt_Unknown+8-ArtLoadCues; 30
-PLC_Main:	dc.w 4			; DATA XREF: ROM:ArtLoadCueso
-		dc.l Nem_Lamppost
-		dc.w $8F80
-		dc.l Nem_HUD
-		dc.w $D940
-		dc.l Nem_Lives
-		dc.w $FA80
-		dc.l Nem_Ring
-		dc.w $D780
-		dc.l Nem_Points
-		dc.w $9580
-PLC_Main2:	dc.w 2			; DATA XREF: ROM:ArtLoadCueso
-		dc.l Nem_Monitors
-		dc.w $D000
-		dc.l Nem_Shield
-		dc.w $97C0
-		dc.l Nem_Stars
-		dc.w $9BC0
-PLC_Explode:	dc.w 0			; DATA XREF: ROM:ArtLoadCueso
-		dc.l Nem_Explosion
-		dc.w $B400
-PLC_GameOver:	dc.w 0			; DATA XREF: ROM:ArtLoadCueso
-		dc.l Nem_GameOver
-		dc.w $ABC0
-PLC_GHZ:	dc.w 8			; DATA XREF: ROM:ArtLoadCueso
-		dc.l Nem_GHZ
-		dc.w 0
-		dc.l Nem_GHZ_Piranha
-		dc.w $8E00
-		dc.l Nem_VSpikes
-		dc.w $9400
-		dc.l Nem_HSpring
-		dc.w $9500
-		dc.l Nem_VSpring
-		dc.w $9700
-		dc.l Nem_GHZ_Bridge
-		dc.w $98C0
-		dc.l Nem_SwingPlatform
-		dc.w $9A00
-		dc.l Nem_Motobug
-		dc.w $9C00
-		dc.l Nem_GHZ_Rock
-		dc.w $D800
-PLC_GHZ2:	dc.w 0			; DATA XREF: ROM:ArtLoadCueso
-		dc.l Nem_GHZ_Piranha
-		dc.w $8E00
+; ---------------------------------------------------------------------------
+; Pattern load cues
+; ---------------------------------------------------------------------------
+ArtLoadCues:
+
+ptr_PLC_Main:		dc.w PLC_Main-ArtLoadCues
+ptr_PLC_Main2:		dc.w PLC_Main2-ArtLoadCues
+ptr_PLC_Explode:	dc.w PLC_Explode-ArtLoadCues
+ptr_PLC_GameOver:	dc.w PLC_GameOver-ArtLoadCues
+PLC_Levels:
+ptr_PLC_GHZ:		dc.w PLC_GHZ-ArtLoadCues
+ptr_PLC_GHZ2:		dc.w PLC_GHZ2-ArtLoadCues
+ptr_PLC_LZ:		dc.w PLC_CPZ-ArtLoadCues
+ptr_PLC_LZ2:            dc.w PLC_CPZ2-ArtLoadCues
+ptr_PLC_CPZ:		dc.w PLC_CPZ-ArtLoadCues
+ptr_PLC_CPZ2:           dc.w PLC_CPZ2-ArtLoadCues
+ptr_PLC_EHZ:		dc.w PLC_EHZ-ArtLoadCues
+ptr_PLC_EHZ2:           dc.w PLC_EHZ2-ArtLoadCues
+ptr_PLC_HPZ:		dc.w PLC_HPZ-ArtLoadCues
+ptr_PLC_HPZ2:           dc.w PLC_HPZ2-ArtLoadCues
+ptr_PLC_HTZ:		dc.w PLC_HTZ-ArtLoadCues
+ptr_PLC_HTZ2:           dc.w PLC_HTZ2-ArtLoadCues
+
+ptr_PLC_TitleCard:	dc.w PLC_S1TitleCard-ArtLoadCues
+ptr_PLC_Boss:		dc.w PLC_Boss-ArtLoadCues
+ptr_PLC_Signpost:	dc.w PLC_Signpost-ArtLoadCues
+ptr_PLC_SpecialStage:	dc.w PLC_Invalid-ArtLoadCues
+ptr_PLC_Warp:		dc.w PLC_Invalid-ArtLoadCues
+PLC_Animals:
+ptr_PLC_GHZAnimals:	dc.w PLC_GHZAnimals-ArtLoadCues
+ptr_PLC_LZAnimals:	dc.w PLC_LZAnimals-ArtLoadCues
+ptr_PLC_CPZAnimals:	dc.w PLC_CPZAnimals-ArtLoadCues
+ptr_PLC_EHZAnimals:	dc.w PLC_EHZAnimals-ArtLoadCues
+ptr_PLC_HPZAnimals:	dc.w PLC_HPZAnimals-ArtLoadCues
+ptr_PLC_HTZAnimals:	dc.w PLC_HTZAnimals-ArtLoadCues
+
+ptr_PLC_SSResult:	dc.w PLC_SSResult-ArtLoadCues
+ptr_PLC_Ending:		dc.w PLC_Ending-ArtLoadCues
+ptr_PLC_TryAgain:	dc.w PLC_TryAgain-ArtLoadCues
+ptr_PLC_EggmanSBZ2:	dc.w PLC_EggmanSBZ2-ArtLoadCues
+ptr_PLC_FZBoss:		dc.w PLC_FZBoss-ArtLoadCues
+
+PLC_SSResult:    equ $1C318
+PLC_Ending:      equ $1C31A
+PLC_TryAgain:    equ $1C31C
+PLC_EggmanSBZ2:  equ $1C31E
+PLC_FZBoss:      equ $1C320
+
+plcm:	macro gfx,vram
+	dc.l gfx
+	dc.w vram
+	endm
+
+PLC_Main:	dc.w ((PLC_Mainend-PLC_Main-2)/6)-1
+		plcm    Nem_Lamppost, $8F80
+		plcm    Nem_HUD, $D940
+		plcm    Nem_Lives, $FA80
+		plcm    Nem_Ring, $D780
+		plcm    Nem_Points, $9580
+	PLC_Mainend:
+
+PLC_Main2:	dc.w ((PLC_Main2end-PLC_Main2-2)/6)-1
+		plcm    Nem_Monitors, $D000
+		plcm    Nem_Shield, $97C0
+		plcm    Nem_Stars, $9BC0
+        PLC_Main2end:
+
+PLC_Explode:	dc.w ((PLC_Explodeend-PLC_Explode-2)/6)-1
+		plcm    Nem_Explosion, $B400
+        PLC_Explodeend:
+
+PLC_GameOver:	dc.w ((PLC_GameOverend-PLC_GameOver-2)/6)-1
+		plcm    Nem_GameOver, $ABC0
+        PLC_GameOverend:
+
+PLC_GHZ:	dc.w ((PLC_GHZend-PLC_GHZ-2)/6)-1
+                plcm    Nem_GHZ, 0
+                plcm    Nem_GHZ_Piranha, $8E00
+                plcm    Nem_VSpikes, $9400
+                plcm    Nem_HSpring, $9500
+                plcm    Nem_VSpring, $9700
+                plcm    Nem_GHZ_Bridge, $98C0
+                plcm    Nem_SwingPlatform, $9A00
+                plcm    Nem_Motobug, $9C00
+                plcm    Nem_GHZ_Rock, $D800
+	PLC_GHZend:
+
+PLC_GHZ2:	dc.w ((PLC_GHZ2end-PLC_GHZ2-2)/6)-1
+                plcm    Nem_GHZ_Piranha, $8E00
+	PLC_GHZ2end:
+
 PLC_CPZ:	dc.w 2			; DATA XREF: ROM:ArtLoadCueso
 		dc.l Nem_CPZ
 		dc.w 0
@@ -127,7 +156,7 @@ PLC_HPZ2:	dc.w 1			; DATA XREF: ROM:ArtLoadCueso
 		dc.l Nem_Redz
 		dc.w $A000
 		dc.l Nem_BBat
-word_1C1E4:	dc.w $A600		; DATA XREF: ROM:0000C3FAo
+        	dc.w $A600
 		dc.l Nem_Gator
 		dc.w $6000
 		dc.l Nem_Buzzer
@@ -234,3 +263,39 @@ PLC_HTZAnimals:	dc.w 1			; DATA XREF: ROM:ArtLoadCueso
 		dc.w $B000
 		dc.l Nem_Chicken
 		dc.w $B240
+		
+; ---------------------------------------------------------------------------
+; Pattern load cue IDs
+; ---------------------------------------------------------------------------
+plcid_Main:		equ (ptr_PLC_Main-ArtLoadCues)/2	; 0
+plcid_Main2:		equ (ptr_PLC_Main2-ArtLoadCues)/2	; 1
+plcid_Explode:		equ (ptr_PLC_Explode-ArtLoadCues)/2	; 2
+plcid_GameOver:		equ (ptr_PLC_GameOver-ArtLoadCues)/2	; 3
+plcid_GHZ:		equ (ptr_PLC_GHZ-ArtLoadCues)/2		; 4
+plcid_GHZ2:		equ (ptr_PLC_GHZ2-ArtLoadCues)/2	; 5
+plcid_LZ:		equ (ptr_PLC_LZ-ArtLoadCues)/2		; 6
+plcid_LZ2:		equ (ptr_PLC_LZ2-ArtLoadCues)/2		; 7
+plcid_CPZ:		equ (ptr_PLC_CPZ-ArtLoadCues)/2		; 8
+plcid_CPZ2:		equ (ptr_PLC_CPZ2-ArtLoadCues)/2	; 9
+plcid_EHZ:		equ (ptr_PLC_EHZ-ArtLoadCues)/2		; $A
+plcid_EHZ2:		equ (ptr_PLC_EHZ2-ArtLoadCues)/2	; $B
+plcid_HPZ:		equ (ptr_PLC_HPZ-ArtLoadCues)/2		; $C
+plcid_HPZ2:		equ (ptr_PLC_HPZ2-ArtLoadCues)/2	; $D
+plcid_HTZ:		equ (ptr_PLC_HTZ-ArtLoadCues)/2		; $E
+plcid_HTZ2:		equ (ptr_PLC_HTZ2-ArtLoadCues)/2	; $F
+plcid_TitleCard:	equ (ptr_PLC_TitleCard-ArtLoadCues)/2	; $10
+plcid_Boss:		equ (ptr_PLC_Boss-ArtLoadCues)/2	; $11
+plcid_Signpost:		equ (ptr_PLC_Signpost-ArtLoadCues)/2	; $12
+plcid_Warp:		equ (ptr_PLC_Warp-ArtLoadCues)/2	; $13
+plcid_SpecialStage:	equ (ptr_PLC_SpecialStage-ArtLoadCues)/2 ; $14
+plcid_GHZAnimals:	equ (ptr_PLC_GHZAnimals-ArtLoadCues)/2	; $15
+plcid_LZAnimals:	equ (ptr_PLC_LZAnimals-ArtLoadCues)/2	; $16
+plcid_CPZAnimals:	equ (ptr_PLC_CPZAnimals-ArtLoadCues)/2	; $17
+plcid_EHZAnimals:	equ (ptr_PLC_EHZAnimals-ArtLoadCues)/2	; $18
+plcid_HPZAnimals:	equ (ptr_PLC_HPZAnimals-ArtLoadCues)/2	; $19
+plcid_HTZAnimals:	equ (ptr_PLC_HTZAnimals-ArtLoadCues)/2	; $1A
+plcid_SSResult:		equ (ptr_PLC_SSResult-ArtLoadCues)/2	; $1B
+plcid_Ending:		equ (ptr_PLC_Ending-ArtLoadCues)/2	; $1C
+plcid_TryAgain:		equ (ptr_PLC_TryAgain-ArtLoadCues)/2	; $1D
+plcid_EggmanSBZ2:	equ (ptr_PLC_EggmanSBZ2-ArtLoadCues)/2	; $1E
+plcid_FZBoss:		equ (ptr_PLC_FZBoss-ArtLoadCues)/2	; $1F

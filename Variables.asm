@@ -82,9 +82,10 @@ v_ptrnemcode:	equ $FFFFF6E0	; pointer for nemesis decompression code ($1502 or $
 
 f_plc_execute:	equ $FFFFF6F8	; flag set for pattern load cue execution (2 bytes)
 v_systemstack:	equ $FFFFFE00
-v_zone:		equ $FFFFFE10	 ; current zone number
-v_act:		equ $FFFFFE11	 ; current act number
-f_2player:      equ $FFFFFFE8    ; flag for 2 player mode.
+v_vbla_count:	equ $FFFFFE0C	; vertical interrupt counter (adds 1 every VBlank) (4 bytes)
+v_zone:		equ $FFFFFE10	; current zone number
+v_act:		equ $FFFFFE11	; current act number
+f_2player:      equ $FFFFFFE8   ; flag for 2 player mode.
 
 v_startofvariables:	equ $000
 v_sndprio:		equ $000	; sound priority (priority of new music/SFX must be higher or equal to this value or it won't play; bit 7 of priority being set prevents this value from changing)
